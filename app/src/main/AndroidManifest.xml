@@ -22,6 +22,10 @@
             android:name=".DetailMovieActivity"
             android:label="Detail Movie" >
         </activity>
+
+        <provider
+            android:name=".service.MovieProvider"
+            android:authorities="com.example.android.movies.app"></provider>
     </application>
 
 </manifest>

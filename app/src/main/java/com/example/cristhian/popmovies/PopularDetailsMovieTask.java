@@ -204,6 +204,7 @@ public class PopularDetailsMovieTask extends AsyncTask<String, MovieDetail, Movi
         }
         movieDetail.setVideos(videos);
 
+        movieDetail.setId(forecastJson.getLong("id"));
         movieDetail.setOriginal_title(forecastJson.getString("original_title"));
         movieDetail.setOverview(forecastJson.getString("overview"));
         movieDetail.setPoster_path(forecastJson.getString("poster_path"));

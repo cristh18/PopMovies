@@ -1,18 +1,26 @@
 package com.example.cristhian.popmovies;
 
 import android.app.Fragment;
+import android.content.ContentValues;
 import android.content.Intent;
+import android.database.Cursor;
 import android.net.Uri;
 import android.os.Bundle;
+import android.provider.UserDictionary;
 import android.support.annotation.Nullable;
+import android.text.TextUtils;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
+import android.widget.Toast;
 
+import com.example.cristhian.popmovies.models.MovieEntity;
+import com.example.cristhian.popmovies.service.MovieProvider;
 import com.squareup.picasso.Picasso;
 
 public class DetailMovieFragment extends Fragment implements IDetailMovie {
@@ -28,9 +36,15 @@ public class DetailMovieFragment extends Fragment implements IDetailMovie {
 
     ImageView image_header_detail;
 
+    Button favoriteButton;
+
+    Button readFavoriteButton;
+
     MovieDetail movieDetail;
 
     LinearLayout lm;
+
+    MovieProvider movieProvider;
 
     public DetailMovieFragment() {
 
@@ -42,6 +56,7 @@ public class DetailMovieFragment extends Fragment implements IDetailMovie {
         if (savedInstanceState != null) {
             movieDetail = savedInstanceState.getParcelable("movieDetail");
         }
+        movieProvider = new MovieProvider();
         setHasOptionsMenu(true);
     }
 
@@ -64,6 +79,10 @@ public class DetailMovieFragment extends Fragment implements IDetailMovie {
 
         image_header_detail = (ImageView) rootView.findViewById(R.id.image_header_detail);
 
+        favoriteButton = (Button) rootView.findViewById(R.id.favoriteButton);
+
+        readFavoriteButton = (Button) rootView.findViewById(R.id.readFavoriteButton);
+
         lm = (LinearLayout) rootView.findViewById(R.id.videosLayout);
 
         if (movieDetail == null) {
@@ -71,6 +90,88 @@ public class DetailMovieFragment extends Fragment implements IDetailMovie {
         } else {
             responseDetailMovie(movieDetail);
         }
+
+        favoriteButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                ContentValues values = new ContentValues();
+                values.put(MovieEntity.COLUMN_MOVIE_ID, movieDetail.getId());
+                values.put(MovieEntity.COLUMN_BACKDROP_PATH, movieDetail.getBackdrop_path());
+                values.put(MovieEntity.COLUMN_ORIGINAL_TITLE, movieDetail.getOriginal_title());
+                values.put(MovieEntity.COLUMN_OVERVIEW, movieDetail.getOverview());
+                values.put(MovieEntity.COLUMN_POSTER_PATH, movieDetail.getPoster_path());
+                values.put(MovieEntity.COLUMN_RELEASE_DATE, movieDetail.getRelease_date());
+                values.put(MovieEntity.COLUMN_RUNTIME, movieDetail.getRuntime());
+                values.put(MovieEntity.COLUMN_VOTE_AVERAGE, movieDetail.getVote_average());
+
+                Uri uri = getActivity().getContentResolver().insert(
+                        MovieEntity.CONTENT_URI, values);
+                Toast.makeText(getActivity(), "Movie Registered", Toast.LENGTH_LONG).show();
+            }
+        });
+
+
+        // A "projection" defines the columns that will be returned for each row
+        final String[] projection = {
+                MovieEntity._ID,    // Contract class constant for the _ID column name
+                MovieEntity.COLUMN_MOVIE_ID,   // Contract class constant for the word column name
+                MovieEntity.COLUMN_BACKDROP_PATH,
+                MovieEntity.COLUMN_ORIGINAL_TITLE,
+                MovieEntity.COLUMN_OVERVIEW,
+                MovieEntity.COLUMN_POSTER_PATH,
+                MovieEntity.COLUMN_RELEASE_DATE,
+                MovieEntity.COLUMN_RUNTIME,
+                MovieEntity.COLUMN_VOTE_AVERAGE
+        };
+
+        // Defines a string to contain the selection clause
+        selectionClause = null;
+
+        // An array to contain selection arguments
+        selectionArgs = null;
+
+        // Gets a word from the UI
+        String searchString = "";
+        if (movieDetail != null && movieDetail.getId() != null) {
+            searchString = movieDetail.getId().toString();
+        }
+
+        if (!TextUtils.isEmpty(searchString)) {
+            // Construct a selection clause that matches the word that the user entered.
+            selectionClause = UserDictionary.Words.WORD + " = ?";
+
+            // Use the user's input string as the (only) selection argument.
+            selectionArgs = new String[]{searchString};
+        }
+
+        // An ORDER BY clause, or null to get results in the default sort order
+        final String sortOrder = null;
+
+        readFavoriteButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                String original_title = "";
+                Cursor cursor = getActivity().getContentResolver().query(
+                        MovieEntity.CONTENT_URI,
+                        projection,
+                        selectionClause,
+                        selectionArgs,
+                        sortOrder);
+
+                if (cursor.moveToFirst()) {
+                    do {
+                        String movie_title = cursor.getString(cursor.getColumnIndex("original_title"));
+                        if (movie_title != null && movie_title.equalsIgnoreCase("")) {
+                            original_title = movie_title;
+                        }
+                    } while (cursor.moveToNext());
+                }
+
+                Toast.makeText(getActivity(), "Movie title: ".concat(original_title), Toast.LENGTH_LONG).show();
+                Log.i("TEST", "Titulo pelicula: ".concat(original_title));
+
+            }
+        });
 
         Log.e("TEST", "onCreate");
 
@@ -160,4 +261,10 @@ public class DetailMovieFragment extends Fragment implements IDetailMovie {
         outState.putParcelable("movieDetail", movieDetail);
         super.onSaveInstanceState(outState);
     }
+
+    // Defines a string to contain the selection clause
+    String selectionClause;
+
+    // An array to contain selection arguments
+    String[] selectionArgs;
 }

@@ -10,6 +10,7 @@ import java.util.List;
  */
 public class MovieDetail implements Parcelable {
 
+    private Long id;
     private String original_title;
     private String overview;
     private String poster_path;
@@ -85,12 +86,21 @@ public class MovieDetail implements Parcelable {
         this.backdrop_path = backdrop_path;
     }
 
+    public Long getId() {
+        return id;
+    }
+
+    public void setId(Long id) {
+        this.id = id;
+    }
+
     public static final Parcelable.Creator<MovieDetail> CREATOR = new Creator<MovieDetail>() {
 
         public MovieDetail createFromParcel(Parcel source) {
 
             MovieDetail movieDetail = new MovieDetail();
 
+            movieDetail.id = source.readLong();
             movieDetail.original_title = source.readString();
             movieDetail.overview = source.readString();
             movieDetail.poster_path = source.readString();
@@ -118,6 +128,7 @@ public class MovieDetail implements Parcelable {
 
     @Override
     public void writeToParcel(Parcel parcel, int i) {
+        parcel.writeLong(id);
         parcel.writeString(original_title);
         parcel.writeString(overview);
         parcel.writeString(poster_path);

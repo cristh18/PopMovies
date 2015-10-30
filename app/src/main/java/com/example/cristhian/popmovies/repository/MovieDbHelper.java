@@ -23,18 +23,19 @@ public class MovieDbHelper extends SQLiteOpenHelper {
     @Override
     public void onCreate(SQLiteDatabase sqLiteDatabase) {
 
-        final String SQL_CREATE_MOVIE_TABLE = "CREATE TABLE " + MovieEntity.TABLE_NAME + " (" +
+        final String SQL_CREATE_MOVIE_TABLE = " CREATE TABLE " + MovieEntity.TABLE_NAME + " (" +
                 MovieEntity._ID + " INTEGER PRIMARY KEY," +
+                MovieEntity.COLUMN_MOVIE_ID + " INTEGER UNIQUE NOT NULL, " +
                 MovieEntity.COLUMN_ORIGINAL_TITLE + " TEXT UNIQUE NOT NULL, " +
                 MovieEntity.COLUMN_OVERVIEW + " TEXT NOT NULL, " +
                 MovieEntity.COLUMN_POSTER_PATH + " TEXT NOT NULL, " +
-                MovieEntity.COLUMN_RELEASE_DATE + " TEXT NOT NULL " +
-                MovieEntity.COLUMN_RUNTIME + " INTEGER NOT NULL " +
-                MovieEntity.COLUMN_VOTE_AVERAGE + " REAL NOT NULL " +
+                MovieEntity.COLUMN_RELEASE_DATE + " TEXT NOT NULL, " +
+                MovieEntity.COLUMN_RUNTIME + " INTEGER NOT NULL, " +
+                MovieEntity.COLUMN_VOTE_AVERAGE + " REAL NOT NULL, " +
                 MovieEntity.COLUMN_BACKDROP_PATH + " TEXT NOT NULL " +
                 " );";
 
-        final String SQL_CREATE_VIDEO_TABLE = "CREATE TABLE " + VideoEntity.TABLE_NAME + " (" +
+        final String SQL_CREATE_VIDEO_TABLE = " CREATE TABLE " + VideoEntity.TABLE_NAME + " (" +
                 // Why AutoIncrement here, and not above?
                 // Unique keys will be auto-generated in either case.  But for weather
                 // forecasting, it's reasonable to assume the user will want information
@@ -44,18 +45,16 @@ public class MovieDbHelper extends SQLiteOpenHelper {
 
                 // the ID of the location entry associated with this weather data
                 VideoEntity.COLUMN_MOV_KEY + " INTEGER NOT NULL, " +
+                VideoEntity.COLUMN_VIDEO_ID + " INTEGER NOT NULL, " +
                 VideoEntity.COLUMN_NAME + " TEXT NOT NULL, " +
                 VideoEntity.COLUMN_KEY + " TEXT NOT NULL," +
-
-                VideoEntity.COLUMN_NAME + " TEXT NOT NULL, " +
                 VideoEntity.COLUMN_SITE + " TEXT NOT NULL, " +
-
                 VideoEntity.COLUMN_SIZE + " INTEGER NOT NULL, " +
                 VideoEntity.COLUMN_TYPE + " TEXT NOT NULL, " +
 
                 // Set up the location column as a foreign key to location table.
                 " FOREIGN KEY (" + VideoEntity.COLUMN_MOV_KEY + ") REFERENCES " +
-                MovieEntity.TABLE_NAME + " (" + MovieEntity._ID + "), " +
+                MovieEntity.TABLE_NAME + " (" + MovieEntity._ID + ") " +
 
                 " );";
 

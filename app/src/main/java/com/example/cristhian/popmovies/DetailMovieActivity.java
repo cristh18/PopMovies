@@ -30,7 +30,7 @@ public class DetailMovieActivity extends AppCompatActivity {
         Intent intent = getIntent();
         movieDetail = intent.getParcelableExtra("movie");
         if (savedInstanceState != null) {
-            detailMovieFragment = (DetailMovieFragment) getFragmentManager().getFragment(savedInstanceState, "detail");
+            detailMovieFragment = (DetailMovieFragment) getFragmentManager().getFragment(savedInstanceState, "movieDetail");
         } else {
             detailMovieFragment = (DetailMovieFragment) getFragmentManager().findFragmentById(R.id.detail_movie_frag);
         }
