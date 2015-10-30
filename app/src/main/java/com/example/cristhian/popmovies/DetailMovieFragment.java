@@ -20,6 +20,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.example.cristhian.popmovies.models.MovieEntity;
+import com.example.cristhian.popmovies.models.VideoEntity;
 import com.example.cristhian.popmovies.service.MovieProvider;
 import com.squareup.picasso.Picasso;
 
@@ -108,6 +109,21 @@ public class DetailMovieFragment extends Fragment implements IDetailMovie {
 
                 Uri uri = getActivity().getContentResolver().insert(
                         MovieEntity.CONTENT_URI, values);
+
+                for (MovieVideoDetail v: movieDetail.getVideos()) {
+                    ContentValues valuesVideo = new ContentValues();
+                    valuesVideo.put(VideoEntity.COLUMN_MOV_KEY,movieDetail.getId());
+                    valuesVideo.put(VideoEntity.COLUMN_KEY, v.getKey());
+                    valuesVideo.put(VideoEntity.COLUMN_NAME, v.getName());
+                    valuesVideo.put(VideoEntity.COLUMN_SITE, v.getSite());
+                    valuesVideo.put(VideoEntity.COLUMN_SIZE, v.getSize());
+                    valuesVideo.put(VideoEntity.COLUMN_TYPE, v.getType());
+                    valuesVideo.put(VideoEntity.COLUMN_VIDEO_ID, v.getId());
+
+                    Uri uriVideo = getActivity().getContentResolver().insert(
+                            VideoEntity.CONTENT_URI, valuesVideo);
+                }
+
                 Toast.makeText(getActivity(), "Movie Registered", Toast.LENGTH_LONG).show();
             }
         });

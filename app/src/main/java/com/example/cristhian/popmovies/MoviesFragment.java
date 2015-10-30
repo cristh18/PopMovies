@@ -16,6 +16,7 @@ import android.widget.AdapterView;
 import android.widget.GridView;
 
 import com.example.cristhian.popmovies.models.MovieEntity;
+import com.example.cristhian.popmovies.models.VideoEntity;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -183,6 +184,78 @@ public class MoviesFragment extends Fragment {
 
     }
 
+    private void searchVideoMovies(){
+        favoriteMovies = new ArrayList<>();
+
+        String[] projection = {
+                VideoEntity.COLUMN_MOV_KEY,
+                VideoEntity.COLUMN_MOV_KEY,
+                VideoEntity.COLUMN_MOV_KEY,
+                VideoEntity.COLUMN_MOV_KEY,
+                VideoEntity.COLUMN_MOV_KEY,
+                VideoEntity.COLUMN_MOV_KEY,
+                VideoEntity.COLUMN_MOV_KEY,
+                VideoEntity.COLUMN_MOV_KEY,
+        };
+        //Cursor cursor = context.getContentResolver().query(
+          //      ContentUris.withAppendedId(
+            //            AkdemiaProvider.CONTENT_URI_RELATIONSHIP_JOIN_PERSON_GET_RELATED, id),
+              //  projection, null, null, null);
+
+        // A "projection" defines the columns that will be returned for each row
+      //  final String[] projection = {
+        //        MovieEntity._ID,    // Contract class constant for the _ID column name
+          //      MovieEntity.COLUMN_MOVIE_ID,   // Contract class constant for the word column name
+            //    MovieEntity.COLUMN_BACKDROP_PATH,
+              //  MovieEntity.COLUMN_ORIGINAL_TITLE,
+                //MovieEntity.COLUMN_OVERVIEW,
+                //MovieEntity.COLUMN_POSTER_PATH,
+                //MovieEntity.COLUMN_RELEASE_DATE,
+                //MovieEntity.COLUMN_RUNTIME,
+                //MovieEntity.COLUMN_VOTE_AVERAGE
+        //};
+
+        // Defines a string to contain the selection clause
+        String selectionClause = null;
+        selectionClause = null;
+
+        // An array to contain selection arguments
+        String[] selectionArgs = null;
+
+
+        // An ORDER BY clause, or null to get results in the default sort order
+        final String sortOrder = null;
+
+        String original_title = "";
+        Cursor cursor = getActivity().getContentResolver().query(
+                MovieEntity.CONTENT_URI,
+                projection,
+                selectionClause,
+                selectionArgs,
+                sortOrder);
+
+        if (cursor.moveToFirst()) {
+            do {
+                String movie_title = cursor.getString(cursor.getColumnIndex("original_title"));
+                original_title = movie_title;
+                Log.i("TEST1", "Titulo pelicula1: ".concat(movie_title));
+                Log.i("TEST2", "Titulo pelicula2: ".concat(original_title));
+
+                Movie movie = new Movie();
+                movie.setId(cursor.getLong(cursor.getColumnIndex("movie_id")));
+                movie.setOriginal_title(cursor.getString(cursor.getColumnIndex("original_title")));
+                movie.setPoster_path(cursor.getString(cursor.getColumnIndex("poster_path")));
+                movie.setBackdrop_path(cursor.getString(cursor.getColumnIndex("backdrop_path")));
+                movie.setOverview(cursor.getString(cursor.getColumnIndex("overview")));
+                movie.setRelease_date(cursor.getString(cursor.getColumnIndex("release_date")));
+                movie.setRuntime(cursor.getInt(cursor.getColumnIndex("runtime")));
+                movie.setVote_average(cursor.getDouble(cursor.getColumnIndex("vote_average")));
+                movie.setFavorite(true);
+                favoriteMovies.add(movie);
+
+            } while (cursor.moveToNext());
+        }
+    }
 
     private List<Movie> favoriteMovies;
 

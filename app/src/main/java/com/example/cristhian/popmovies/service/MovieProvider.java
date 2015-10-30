@@ -10,6 +10,7 @@ import android.content.UriMatcher;
 import android.database.Cursor;
 import android.database.SQLException;
 import android.database.sqlite.SQLiteDatabase;
+import android.database.sqlite.SQLiteQueryBuilder;
 import android.net.Uri;
 import android.support.annotation.Nullable;
 
@@ -60,14 +61,35 @@ public class MovieProvider extends ContentProvider {
     public Cursor query(Uri uri, String[] projection, String selection, String[] selectionArgs,
                         String sortOrder) {
         Cursor retCursor;
+
+        SQLiteQueryBuilder _QB = new SQLiteQueryBuilder();
         switch (sUriMatcher.match(uri)) {
             case VIDEO: {
-                retCursor = mOpenHelper.getReadableDatabase().query(VideoEntity.TABLE_NAME, projection, selection, selectionArgs, null, null, sortOrder);
+                //retCursor = mOpenHelper.getReadableDatabase().query(VideoEntity.TABLE_NAME, projection, selection, selectionArgs, null, null, sortOrder);
+                //break;
+
+
+                SQLiteDatabase db = mOpenHelper.getWritableDatabase();
+                String[] args = {String.valueOf(uri.getLastPathSegment())};
+                Cursor cursor = db.rawQuery(
+                        "SELECT p1.first_name, p1.last_name " +
+                                "FROM Movie m, Video v " +
+                                "WHERE m.movie_id = v.movie_id AND " +
+                                "v.movie_id = ?", args);
+                cursor.setNotificationUri(getContext().getContentResolver(), uri);
+                retCursor = cursor;
                 break;
             }
             case MOVIE: {
                 retCursor = mOpenHelper.getReadableDatabase().query(MovieEntity.TABLE_NAME, projection, selection, selectionArgs, null, null, sortOrder);
                 break;
+
+                    //_QB.setTables(MovieEntity.TABLE_NAME +
+                      //      " INNER JOIN " + VideoEntity.TABLE_NAME + " ON " +
+                        //    MovieEntity.COLUMN_MOVIE_ID + " = " + VideoEntity.COLUMN_MOV_KEY);
+                    //_QB.setProjectionMap();
+                    //_TableType = BOOKS;
+                    //break;
             }
 
             default:
