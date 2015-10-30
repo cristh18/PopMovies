@@ -23,6 +23,8 @@ import com.example.cristhian.popmovies.models.MovieEntity;
 import com.example.cristhian.popmovies.service.MovieProvider;
 import com.squareup.picasso.Picasso;
 
+import java.util.ArrayList;
+
 public class DetailMovieFragment extends Fragment implements IDetailMovie {
 
     private final String LOG_TAG = DetailMovieFragment.class.getSimpleName();
@@ -110,46 +112,43 @@ public class DetailMovieFragment extends Fragment implements IDetailMovie {
             }
         });
 
-
-        // A "projection" defines the columns that will be returned for each row
-        final String[] projection = {
-                MovieEntity._ID,    // Contract class constant for the _ID column name
-                MovieEntity.COLUMN_MOVIE_ID,   // Contract class constant for the word column name
-                MovieEntity.COLUMN_BACKDROP_PATH,
-                MovieEntity.COLUMN_ORIGINAL_TITLE,
-                MovieEntity.COLUMN_OVERVIEW,
-                MovieEntity.COLUMN_POSTER_PATH,
-                MovieEntity.COLUMN_RELEASE_DATE,
-                MovieEntity.COLUMN_RUNTIME,
-                MovieEntity.COLUMN_VOTE_AVERAGE
-        };
-
-        // Defines a string to contain the selection clause
-        selectionClause = null;
-
-        // An array to contain selection arguments
-        selectionArgs = null;
-
-        // Gets a word from the UI
-        String searchString = "";
-        if (movieDetail != null && movieDetail.getId() != null) {
-            searchString = movieDetail.getId().toString();
-        }
-
-        if (!TextUtils.isEmpty(searchString)) {
-            // Construct a selection clause that matches the word that the user entered.
-            selectionClause = UserDictionary.Words.WORD + " = ?";
-
-            // Use the user's input string as the (only) selection argument.
-            selectionArgs = new String[]{searchString};
-        }
-
-        // An ORDER BY clause, or null to get results in the default sort order
-        final String sortOrder = null;
-
         readFavoriteButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
+
+                // A "projection" defines the columns that will be returned for each row
+                final String[] projection = {
+                        MovieEntity._ID,    // Contract class constant for the _ID column name
+                        MovieEntity.COLUMN_MOVIE_ID,   // Contract class constant for the word column name
+                        MovieEntity.COLUMN_BACKDROP_PATH,
+                        MovieEntity.COLUMN_ORIGINAL_TITLE,
+                        MovieEntity.COLUMN_OVERVIEW,
+                        MovieEntity.COLUMN_POSTER_PATH,
+                        MovieEntity.COLUMN_RELEASE_DATE,
+                        MovieEntity.COLUMN_RUNTIME,
+                        MovieEntity.COLUMN_VOTE_AVERAGE
+                };
+
+                // Defines a string to contain the selection clause
+                selectionClause = null;
+
+                // An array to contain selection arguments
+                selectionArgs = null;
+
+                // Gets a word from the UI
+                String searchString = "";
+                if (movieDetail != null && movieDetail.getId() != null) {
+                    searchString = movieDetail.getId().toString();
+                    Log.i("TESTMovieSelected", "Movie Selected: ".concat(movieDetail.getId().toString()).concat(" - ").concat(movieDetail.getOriginal_title()));
+                    Log.i("TESTsearchString", "Param busqueda searchString: ".concat(searchString));
+                }
+
+                selectionClause = MovieEntity.COLUMN_MOVIE_ID + "=?";
+                selectionArgs = new String[]{searchString};
+
+                // An ORDER BY clause, or null to get results in the default sort order
+                final String sortOrder = null;
+
                 String original_title = "";
                 Cursor cursor = getActivity().getContentResolver().query(
                         MovieEntity.CONTENT_URI,
@@ -161,14 +160,15 @@ public class DetailMovieFragment extends Fragment implements IDetailMovie {
                 if (cursor.moveToFirst()) {
                     do {
                         String movie_title = cursor.getString(cursor.getColumnIndex("original_title"));
-                        if (movie_title != null && movie_title.equalsIgnoreCase("")) {
                             original_title = movie_title;
-                        }
+                            Log.i("TEST1", "Titulo pelicula1: ".concat(movie_title));
+                            Log.i("TEST2", "Titulo pelicula2: ".concat(original_title));
+
                     } while (cursor.moveToNext());
                 }
 
                 Toast.makeText(getActivity(), "Movie title: ".concat(original_title), Toast.LENGTH_LONG).show();
-                Log.i("TEST", "Titulo pelicula: ".concat(original_title));
+                Log.i("TEST3", "Titulo pelicula3: ".concat(original_title));
 
             }
         });
@@ -189,8 +189,12 @@ public class DetailMovieFragment extends Fragment implements IDetailMovie {
 
     public void updateInfo(Movie mv) {
         if (mv != null) {
-            PopularDetailsMovieTask popularDetailsMovieTask = new PopularDetailsMovieTask(this);
-            popularDetailsMovieTask.execute(mv.getId().toString());
+            if (mv.isFavorite()==false){
+                PopularDetailsMovieTask popularDetailsMovieTask = new PopularDetailsMovieTask(this);
+                popularDetailsMovieTask.execute(mv.getId().toString());
+            }else {
+                buildFavoriteMovie(mv);
+            }
         }
     }
 
@@ -260,6 +264,22 @@ public class DetailMovieFragment extends Fragment implements IDetailMovie {
     public void onSaveInstanceState(Bundle outState) {
         outState.putParcelable("movieDetail", movieDetail);
         super.onSaveInstanceState(outState);
+    }
+
+    private void buildFavoriteMovie(Movie mv){
+        if (mv != null){
+            MovieDetail movieDetail = new MovieDetail();
+            movieDetail.setId(mv.getId());
+            movieDetail.setOriginal_title(mv.getOriginal_title());
+            movieDetail.setPoster_path(mv.getPoster_path());
+            movieDetail.setBackdrop_path(mv.getBackdrop_path());
+            movieDetail.setOverview(mv.getOverview());
+            movieDetail.setRelease_date(mv.getRelease_date());
+            movieDetail.setRuntime(mv.getRuntime());
+            movieDetail.setVote_average(mv.getVote_average());
+            movieDetail.setVideos(new ArrayList<MovieVideoDetail>());
+            responseDetailMovie(movieDetail);
+        }
     }
 
     // Defines a string to contain the selection clause

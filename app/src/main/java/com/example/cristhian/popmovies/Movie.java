@@ -40,6 +40,10 @@ public class Movie implements Parcelable {
 
     private Integer vote_count;
 
+    private boolean favorite;
+
+    private Integer runtime;
+
     public Movie(JSONObject jsonObject) {
         //this.id = Long.parseLong(jsonObject.optString("id").toString());
 
@@ -59,6 +63,7 @@ public class Movie implements Parcelable {
             this.video = jsonObject.optBoolean("video");
             this.vote_average = jsonObject.optDouble("vote_average");
             this.vote_count = jsonObject.optInt("vote_count");
+//            this.favorite = false;
         } catch (JSONException e) {
             e.printStackTrace();
         }
@@ -188,6 +193,21 @@ public class Movie implements Parcelable {
         return id;
     }
 
+    public boolean isFavorite() {
+        return favorite;
+    }
+
+    public void setFavorite(boolean favorite) {
+        this.favorite = favorite;
+    }
+
+    public Integer getRuntime() {
+        return runtime;
+    }
+
+    public void setRuntime(Integer runtime) {
+        this.runtime = runtime;
+    }
 
     public static final Parcelable.Creator<Movie> CREATOR = new Creator<Movie>() {
 
@@ -197,6 +217,7 @@ public class Movie implements Parcelable {
 
             movie.id = source.readLong();
             movie.backdrop_path = source.readString();
+//            movie.favorite = source.readByte() != 0;
 
             return movie;
 
@@ -227,5 +248,6 @@ public class Movie implements Parcelable {
         parcel.writeString(title);
         parcel.writeDouble(vote_average);
         parcel.writeInt(vote_count);
+//        parcel.writeByte((byte)(favorite ? 1 : 0));
     }
 }

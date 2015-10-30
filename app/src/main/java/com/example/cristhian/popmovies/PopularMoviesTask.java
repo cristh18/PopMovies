@@ -134,6 +134,7 @@ public class PopularMoviesTask extends AsyncTask<String, Void, List<Movie>> {
         if (result != null) {
             MoviesFragment.customListAdapter.clear();
             for (Movie a : result) {
+                a.setFavorite(false);
                 MoviesFragment.customListAdapter.add(a);
             }
         }
