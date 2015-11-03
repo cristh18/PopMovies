@@ -29,6 +29,7 @@ public class MovieProvider extends ContentProvider {
 
     static final int MOVIE = 100;
     static final int VIDEO = 200;
+    static final int MOVIE_WITH_VIDEOS = 300;
 
     @Override
     public boolean onCreate() {
@@ -37,23 +38,54 @@ public class MovieProvider extends ContentProvider {
     }
 
     static UriMatcher buildUriMatcher() {
-        // 1) The code passed into the constructor represents the code to return for the root
-        // URI.  It's common to use NO_MATCH as the code for this case. Add the constructor below.
-
-
-        // 2) Use the addURI function to match each of the types.  Use the constants from
-        // WeatherContract to help define the types to the UriMatcher.
-
-
-        // 3) Return the new matcher!
 
         final UriMatcher matcher = new UriMatcher(UriMatcher.NO_MATCH);
         final String authority = MovieContract.CONTENT_AUTHORITY;
 
         matcher.addURI(authority, MovieContract.PATH_VIDEO, VIDEO);
         matcher.addURI(authority, MovieContract.PATH_MOVIE, MOVIE);
+        matcher.addURI(authority, MovieContract.PATH_VIDEO + "/*", MOVIE_WITH_VIDEOS);
 
         return matcher;
+    }
+
+    private static final SQLiteQueryBuilder sVideosByMovieQueryBuilder;
+
+    static {
+        sVideosByMovieQueryBuilder = new SQLiteQueryBuilder();
+
+        //This is an inner join which looks like
+        //video INNER JOIN movie ON video.movie_id = movie.movie_id
+        sVideosByMovieQueryBuilder.setTables(
+                VideoEntity.TABLE_NAME + " INNER JOIN " +
+                        MovieEntity.TABLE_NAME +
+                        " ON " + VideoEntity.TABLE_NAME +
+                        "." + VideoEntity.COLUMN_MOV_KEY +
+                        " = " + MovieEntity.TABLE_NAME +
+                        "." + MovieEntity.COLUMN_MOVIE_ID);
+    }
+
+    //movie.movie_id = ?
+    private static final String sMovieSettingSelection =
+            MovieEntity.TABLE_NAME +
+                    "." + MovieEntity.COLUMN_MOVIE_ID + " = ? ";
+
+    private Cursor getVideosByMovie(Uri uri, String[] projection, String sortOrder) {
+        String movie = VideoEntity.getVideoFromUri(uri);
+        String[] selectionArgs;
+        String selection;
+
+        selection = sMovieSettingSelection;
+        selectionArgs = new String[]{movie};
+
+        return sVideosByMovieQueryBuilder.query(mOpenHelper.getReadableDatabase(),
+                projection,
+                selection,
+                selectionArgs,
+                null,
+                null,
+                sortOrder
+        );
     }
 
     @Nullable
@@ -62,34 +94,18 @@ public class MovieProvider extends ContentProvider {
                         String sortOrder) {
         Cursor retCursor;
 
-        SQLiteQueryBuilder _QB = new SQLiteQueryBuilder();
         switch (sUriMatcher.match(uri)) {
             case VIDEO: {
-                //retCursor = mOpenHelper.getReadableDatabase().query(VideoEntity.TABLE_NAME, projection, selection, selectionArgs, null, null, sortOrder);
-                //break;
-
-
-                SQLiteDatabase db = mOpenHelper.getWritableDatabase();
-                String[] args = {String.valueOf(uri.getLastPathSegment())};
-                Cursor cursor = db.rawQuery(
-                        "SELECT p1.first_name, p1.last_name " +
-                                "FROM Movie m, Video v " +
-                                "WHERE m.movie_id = v.movie_id AND " +
-                                "v.movie_id = ?", args);
-                cursor.setNotificationUri(getContext().getContentResolver(), uri);
-                retCursor = cursor;
+                retCursor = mOpenHelper.getReadableDatabase().query(VideoEntity.TABLE_NAME, projection, selection, selectionArgs, null, null, sortOrder);
                 break;
             }
             case MOVIE: {
                 retCursor = mOpenHelper.getReadableDatabase().query(MovieEntity.TABLE_NAME, projection, selection, selectionArgs, null, null, sortOrder);
                 break;
-
-                    //_QB.setTables(MovieEntity.TABLE_NAME +
-                      //      " INNER JOIN " + VideoEntity.TABLE_NAME + " ON " +
-                        //    MovieEntity.COLUMN_MOVIE_ID + " = " + VideoEntity.COLUMN_MOV_KEY);
-                    //_QB.setProjectionMap();
-                    //_TableType = BOOKS;
-                    //break;
+            }
+            case MOVIE_WITH_VIDEOS: {
+                retCursor = getVideosByMovie(uri, projection, sortOrder);
+                break;
             }
 
             default:
@@ -111,6 +127,8 @@ public class MovieProvider extends ContentProvider {
                 return MovieEntity.CONTENT_TYPE;
             case VIDEO:
                 return VideoEntity.CONTENT_TYPE;
+            case MOVIE_WITH_VIDEOS:
+                return VideoEntity.CONTENT_TYPE;
             default:
                 throw new UnsupportedOperationException("Unknown uri: " + uri);
         }
@@ -127,7 +145,7 @@ public class MovieProvider extends ContentProvider {
             case VIDEO: {
                 long _id = db.insert(VideoEntity.TABLE_NAME, null, values);
                 if (_id > 0)
-                    returnUri = VideoEntity.buildWeatherUri(_id);
+                    returnUri = VideoEntity.buildVideoUri(_id);
                 else
                     throw new android.database.SQLException("Failed to insert row into " + uri);
                 break;
@@ -135,7 +153,7 @@ public class MovieProvider extends ContentProvider {
             case MOVIE: {
                 long _id = db.insert(MovieEntity.TABLE_NAME, null, values);
                 if (_id > 0)
-                    returnUri = MovieEntity.buildLocationUri(_id);
+                    returnUri = MovieEntity.buildMovieUri(_id);
                 else
                     throw new android.database.SQLException("Failed to insert row into " + uri);
                 break;
@@ -192,4 +210,5 @@ public class MovieProvider extends ContentProvider {
         }
         return rowsUpdated;
     }
+
 }

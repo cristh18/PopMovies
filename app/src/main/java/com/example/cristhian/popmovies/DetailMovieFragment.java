@@ -110,9 +110,9 @@ public class DetailMovieFragment extends Fragment implements IDetailMovie {
                 Uri uri = getActivity().getContentResolver().insert(
                         MovieEntity.CONTENT_URI, values);
 
-                for (MovieVideoDetail v: movieDetail.getVideos()) {
+                for (MovieVideoDetail v : movieDetail.getVideos()) {
                     ContentValues valuesVideo = new ContentValues();
-                    valuesVideo.put(VideoEntity.COLUMN_MOV_KEY,movieDetail.getId());
+                    valuesVideo.put(VideoEntity.COLUMN_MOV_KEY, movieDetail.getId());
                     valuesVideo.put(VideoEntity.COLUMN_KEY, v.getKey());
                     valuesVideo.put(VideoEntity.COLUMN_NAME, v.getName());
                     valuesVideo.put(VideoEntity.COLUMN_SITE, v.getSite());
@@ -132,10 +132,9 @@ public class DetailMovieFragment extends Fragment implements IDetailMovie {
             @Override
             public void onClick(View view) {
 
-                // A "projection" defines the columns that will be returned for each row
                 final String[] projection = {
-                        MovieEntity._ID,    // Contract class constant for the _ID column name
-                        MovieEntity.COLUMN_MOVIE_ID,   // Contract class constant for the word column name
+                        MovieEntity._ID,
+                        MovieEntity.COLUMN_MOVIE_ID,
                         MovieEntity.COLUMN_BACKDROP_PATH,
                         MovieEntity.COLUMN_ORIGINAL_TITLE,
                         MovieEntity.COLUMN_OVERVIEW,
@@ -176,9 +175,9 @@ public class DetailMovieFragment extends Fragment implements IDetailMovie {
                 if (cursor.moveToFirst()) {
                     do {
                         String movie_title = cursor.getString(cursor.getColumnIndex("original_title"));
-                            original_title = movie_title;
-                            Log.i("TEST1", "Titulo pelicula1: ".concat(movie_title));
-                            Log.i("TEST2", "Titulo pelicula2: ".concat(original_title));
+                        original_title = movie_title;
+                        Log.i("TEST1", "Titulo pelicula1: ".concat(movie_title));
+                        Log.i("TEST2", "Titulo pelicula2: ".concat(original_title));
 
                     } while (cursor.moveToNext());
                 }
@@ -205,10 +204,10 @@ public class DetailMovieFragment extends Fragment implements IDetailMovie {
 
     public void updateInfo(Movie mv) {
         if (mv != null) {
-            if (mv.isFavorite()==false){
+            if (mv.isFavorite() == false) {
                 PopularDetailsMovieTask popularDetailsMovieTask = new PopularDetailsMovieTask(this);
                 popularDetailsMovieTask.execute(mv.getId().toString());
-            }else {
+            } else {
                 buildFavoriteMovie(mv);
             }
         }
@@ -218,6 +217,7 @@ public class DetailMovieFragment extends Fragment implements IDetailMovie {
     public void responseDetailMovie(final MovieDetail movieDetail) {
         Log.e("TEST", "responseDetailMovie");
         if (movieDetail != null) {
+            lm.removeAllViews();
             this.movieDetail = movieDetail;
             if (image_header_detail != null) {
 
@@ -239,6 +239,7 @@ public class DetailMovieFragment extends Fragment implements IDetailMovie {
 //                final LinearLayout lm = (LinearLayout) getActivity().findViewById(R.id.videosLayout);
                 LinearLayout.LayoutParams params = new LinearLayout.LayoutParams(
                         android.app.ActionBar.LayoutParams.WRAP_CONTENT, android.app.ActionBar.LayoutParams.WRAP_CONTENT);
+
 
                 for (int i = 0; i < movieDetail.getVideos().size(); i++) {
                     MovieVideoDetail movieVideoDetail = movieDetail.getVideos().get(i);
@@ -272,6 +273,7 @@ public class DetailMovieFragment extends Fragment implements IDetailMovie {
 
                     lm.addView(ll);
                 }
+
             }
         }
     }
@@ -282,8 +284,8 @@ public class DetailMovieFragment extends Fragment implements IDetailMovie {
         super.onSaveInstanceState(outState);
     }
 
-    private void buildFavoriteMovie(Movie mv){
-        if (mv != null){
+    private void buildFavoriteMovie(Movie mv) {
+        if (mv != null) {
             MovieDetail movieDetail = new MovieDetail();
             movieDetail.setId(mv.getId());
             movieDetail.setOriginal_title(mv.getOriginal_title());
@@ -293,7 +295,13 @@ public class DetailMovieFragment extends Fragment implements IDetailMovie {
             movieDetail.setRelease_date(mv.getRelease_date());
             movieDetail.setRuntime(mv.getRuntime());
             movieDetail.setVote_average(mv.getVote_average());
-            movieDetail.setVideos(new ArrayList<MovieVideoDetail>());
+
+            if (mv.getVideos().size() > 0 && !mv.getVideos().isEmpty()) {
+                movieDetail.setVideos(mv.getVideos());
+            } else {
+                movieDetail.setVideos(new ArrayList<MovieVideoDetail>());
+            }
+
             responseDetailMovie(movieDetail);
         }
     }

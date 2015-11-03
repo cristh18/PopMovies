@@ -2,6 +2,7 @@ package com.example.cristhian.popmovies;
 
 import android.app.Activity;
 import android.app.Fragment;
+import android.content.ContentUris;
 import android.database.Cursor;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
@@ -167,6 +168,9 @@ public class MoviesFragment extends Fragment {
                 movie.setRuntime(cursor.getInt(cursor.getColumnIndex("runtime")));
                 movie.setVote_average(cursor.getDouble(cursor.getColumnIndex("vote_average")));
                 movie.setFavorite(true);
+
+                movie.setVideos(searchVideoMovies(movie.getId()));
+
                 favoriteMovies.add(movie);
 
             } while (cursor.moveToNext());
@@ -178,82 +182,56 @@ public class MoviesFragment extends Fragment {
         int i = 1;
         for (Movie m:favoriteMovies) {
             Log.i("TestMovie", "Movie ".concat(String.valueOf(i)).concat(": ").concat(m.getOriginal_title()));
+            seeVideoMovies(m);
             i++;
             customListAdapter.add(m);
         }
 
     }
 
-    private void searchVideoMovies(){
-        favoriteMovies = new ArrayList<>();
+    private List<MovieVideoDetail> searchVideoMovies(Long movieId) {
+        List<MovieVideoDetail> videos = new ArrayList<>();
 
         String[] projection = {
-                VideoEntity.COLUMN_MOV_KEY,
-                VideoEntity.COLUMN_MOV_KEY,
-                VideoEntity.COLUMN_MOV_KEY,
-                VideoEntity.COLUMN_MOV_KEY,
-                VideoEntity.COLUMN_MOV_KEY,
-                VideoEntity.COLUMN_MOV_KEY,
-                VideoEntity.COLUMN_MOV_KEY,
-                VideoEntity.COLUMN_MOV_KEY,
+                VideoEntity.COLUMN_VIDEO_ID,
+                VideoEntity.COLUMN_NAME,
+                VideoEntity.COLUMN_KEY,
+                VideoEntity.COLUMN_SITE,
+                VideoEntity.COLUMN_SIZE,
+                VideoEntity.COLUMN_TYPE
         };
-        //Cursor cursor = context.getContentResolver().query(
-          //      ContentUris.withAppendedId(
-            //            AkdemiaProvider.CONTENT_URI_RELATIONSHIP_JOIN_PERSON_GET_RELATED, id),
-              //  projection, null, null, null);
 
-        // A "projection" defines the columns that will be returned for each row
-      //  final String[] projection = {
-        //        MovieEntity._ID,    // Contract class constant for the _ID column name
-          //      MovieEntity.COLUMN_MOVIE_ID,   // Contract class constant for the word column name
-            //    MovieEntity.COLUMN_BACKDROP_PATH,
-              //  MovieEntity.COLUMN_ORIGINAL_TITLE,
-                //MovieEntity.COLUMN_OVERVIEW,
-                //MovieEntity.COLUMN_POSTER_PATH,
-                //MovieEntity.COLUMN_RELEASE_DATE,
-                //MovieEntity.COLUMN_RUNTIME,
-                //MovieEntity.COLUMN_VOTE_AVERAGE
-        //};
-
-        // Defines a string to contain the selection clause
-        String selectionClause = null;
-        selectionClause = null;
-
-        // An array to contain selection arguments
-        String[] selectionArgs = null;
-
-
-        // An ORDER BY clause, or null to get results in the default sort order
-        final String sortOrder = null;
-
-        String original_title = "";
-        Cursor cursor = getActivity().getContentResolver().query(
-                MovieEntity.CONTENT_URI,
+        Cursor cursor = getActivity().getContentResolver().query(VideoEntity.buildVideoUri(movieId),
                 projection,
-                selectionClause,
-                selectionArgs,
-                sortOrder);
+                null,
+                null,
+                null);
 
         if (cursor.moveToFirst()) {
             do {
-                String movie_title = cursor.getString(cursor.getColumnIndex("original_title"));
-                original_title = movie_title;
-                Log.i("TEST1", "Titulo pelicula1: ".concat(movie_title));
-                Log.i("TEST2", "Titulo pelicula2: ".concat(original_title));
-
-                Movie movie = new Movie();
-                movie.setId(cursor.getLong(cursor.getColumnIndex("movie_id")));
-                movie.setOriginal_title(cursor.getString(cursor.getColumnIndex("original_title")));
-                movie.setPoster_path(cursor.getString(cursor.getColumnIndex("poster_path")));
-                movie.setBackdrop_path(cursor.getString(cursor.getColumnIndex("backdrop_path")));
-                movie.setOverview(cursor.getString(cursor.getColumnIndex("overview")));
-                movie.setRelease_date(cursor.getString(cursor.getColumnIndex("release_date")));
-                movie.setRuntime(cursor.getInt(cursor.getColumnIndex("runtime")));
-                movie.setVote_average(cursor.getDouble(cursor.getColumnIndex("vote_average")));
-                movie.setFavorite(true);
-                favoriteMovies.add(movie);
+                MovieVideoDetail movieVideoDetail = new MovieVideoDetail();
+                movieVideoDetail.setId(cursor.getString(cursor.getColumnIndex("video_id")));
+                movieVideoDetail.setName(cursor.getString(cursor.getColumnIndex("name")));
+                movieVideoDetail.setKey(cursor.getString(cursor.getColumnIndex("key")));
+                movieVideoDetail.setSite(cursor.getString(cursor.getColumnIndex("site")));
+                movieVideoDetail.setSize(cursor.getInt(cursor.getColumnIndex("size")));
+                movieVideoDetail.setType(cursor.getString(cursor.getColumnIndex("type")));
+                videos.add(movieVideoDetail);
 
             } while (cursor.moveToNext());
+        }
+
+        return videos;
+    }
+
+
+    private void seeVideoMovies(Movie movie){
+        if (movie.getVideos().size()>0){
+            int j = 0;
+            for (MovieVideoDetail v:movie.getVideos()) {
+                Log.i("TestMovieVideo", "Video ".concat(String.valueOf(j)).concat(": ").concat(v.getId()));
+                j++;
+            }
         }
     }
 

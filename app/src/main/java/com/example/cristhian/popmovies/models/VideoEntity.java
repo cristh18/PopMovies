@@ -33,7 +33,18 @@ public class VideoEntity implements BaseColumns {
     public static final String COLUMN_SIZE = "size";
     public static final String COLUMN_TYPE = "type";
 
-    public static Uri buildWeatherUri(long id) {
+    public static Uri buildVideoUri(long id) {
         return ContentUris.withAppendedId(CONTENT_URI, id);
+    }
+
+    public static String getVideoFromUri(Uri uri) {
+        return uri.getPathSegments().get(1);
+    }
+
+    /*
+           Student: This is the buildWeatherLocation function you filled in.
+        */
+    public static Uri buildVideoMovie(String movieSetting) {
+        return CONTENT_URI.buildUpon().appendPath(movieSetting).build();
     }
 }

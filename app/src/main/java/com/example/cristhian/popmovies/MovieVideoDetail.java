@@ -31,6 +31,8 @@ public class MovieVideoDetail {
         this.type=jsonObject.optString("type");
     }
 
+    public  MovieVideoDetail(){}
+
     public String getId() {
         return id;
     }

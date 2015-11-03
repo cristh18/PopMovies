@@ -44,6 +44,8 @@ public class Movie implements Parcelable {
 
     private Integer runtime;
 
+    private List<MovieVideoDetail> videos;
+
     public Movie(JSONObject jsonObject) {
         //this.id = Long.parseLong(jsonObject.optString("id").toString());
 
@@ -207,6 +209,14 @@ public class Movie implements Parcelable {
 
     public void setRuntime(Integer runtime) {
         this.runtime = runtime;
+    }
+
+    public List<MovieVideoDetail> getVideos() {
+        return videos;
+    }
+
+    public void setVideos(List<MovieVideoDetail> videos) {
+        this.videos = videos;
     }
 
     public static final Parcelable.Creator<Movie> CREATOR = new Creator<Movie>() {
