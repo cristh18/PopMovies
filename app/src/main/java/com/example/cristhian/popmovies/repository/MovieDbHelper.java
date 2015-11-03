@@ -32,7 +32,9 @@ public class MovieDbHelper extends SQLiteOpenHelper {
                 MovieEntity.COLUMN_RELEASE_DATE + " TEXT NOT NULL, " +
                 MovieEntity.COLUMN_RUNTIME + " INTEGER NOT NULL, " +
                 MovieEntity.COLUMN_VOTE_AVERAGE + " REAL NOT NULL, " +
-                MovieEntity.COLUMN_BACKDROP_PATH + " TEXT NOT NULL " +
+                MovieEntity.COLUMN_BACKDROP_PATH + " TEXT NOT NULL, " +
+                MovieEntity.COLUMN_POPULARITY + " REAL NOT NULL, " +
+                MovieEntity.COLUMN_VOTE_COUNT + " INTEGER NOT NULL " +
                 " );";
 
         final String SQL_CREATE_VIDEO_TABLE = " CREATE TABLE " + VideoEntity.TABLE_NAME + " (" +

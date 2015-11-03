@@ -18,6 +18,8 @@ public class MovieDetail implements Parcelable {
     private Integer runtime;
     private Double vote_average;
     private String backdrop_path;
+    private Double popularity;
+    private Integer vote_count;
     private List<MovieVideoDetail> videos;
 
     public String getOriginal_title() {
@@ -94,6 +96,22 @@ public class MovieDetail implements Parcelable {
         this.id = id;
     }
 
+    public Double getPopularity() {
+        return popularity;
+    }
+
+    public void setPopularity(Double popularity) {
+        this.popularity = popularity;
+    }
+
+    public Integer getVote_count() {
+        return vote_count;
+    }
+
+    public void setVote_count(Integer vote_count) {
+        this.vote_count = vote_count;
+    }
+
     public static final Parcelable.Creator<MovieDetail> CREATOR = new Creator<MovieDetail>() {
 
         public MovieDetail createFromParcel(Parcel source) {
@@ -108,6 +126,8 @@ public class MovieDetail implements Parcelable {
             movieDetail.runtime = source.readInt();
             movieDetail.vote_average = source.readDouble();
             movieDetail.backdrop_path = source.readString();
+            movieDetail.popularity = source.readDouble();
+            movieDetail.vote_count = source.readInt();
             movieDetail.videos = source.readArrayList(MovieDetail.class.getClassLoader());
 
             return movieDetail;
@@ -136,6 +156,8 @@ public class MovieDetail implements Parcelable {
         parcel.writeInt(runtime);
         parcel.writeDouble(vote_average);
         parcel.writeString(backdrop_path);
+        parcel.writeDouble(popularity);
+        parcel.writeInt(vote_count);
         parcel.writeList(videos);
     }
 }

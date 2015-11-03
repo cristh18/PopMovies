@@ -129,7 +129,9 @@ public class MoviesFragment extends Fragment {
                 MovieEntity.COLUMN_POSTER_PATH,
                 MovieEntity.COLUMN_RELEASE_DATE,
                 MovieEntity.COLUMN_RUNTIME,
-                MovieEntity.COLUMN_VOTE_AVERAGE
+                MovieEntity.COLUMN_VOTE_AVERAGE,
+                MovieEntity.COLUMN_POPULARITY,
+                MovieEntity.COLUMN_VOTE_COUNT
         };
 
         // Defines a string to contain the selection clause
@@ -167,6 +169,8 @@ public class MoviesFragment extends Fragment {
                 movie.setRelease_date(cursor.getString(cursor.getColumnIndex("release_date")));
                 movie.setRuntime(cursor.getInt(cursor.getColumnIndex("runtime")));
                 movie.setVote_average(cursor.getDouble(cursor.getColumnIndex("vote_average")));
+                movie.setPopularity(cursor.getDouble(cursor.getColumnIndex("popularity")));
+                movie.setVote_count(cursor.getInt(cursor.getColumnIndex("vote_count")));
                 movie.setFavorite(true);
 
                 movie.setVideos(searchVideoMovies(movie.getId()));

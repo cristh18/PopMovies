@@ -107,6 +107,18 @@ public class DetailMovieFragment extends Fragment implements IDetailMovie {
                 values.put(MovieEntity.COLUMN_RUNTIME, movieDetail.getRuntime());
                 values.put(MovieEntity.COLUMN_VOTE_AVERAGE, movieDetail.getVote_average());
 
+                if (movieDetail.getPopularity() != null){
+                    values.put(MovieEntity.COLUMN_POPULARITY, movieDetail.getPopularity());
+                }else {
+                    values.put(MovieEntity.COLUMN_POPULARITY, 0.0);
+                }
+
+                if (movieDetail.getVote_count() != null){
+                    values.put(MovieEntity.COLUMN_VOTE_COUNT, movieDetail.getVote_count());
+                }else {
+                    values.put(MovieEntity.COLUMN_VOTE_COUNT, 0);
+                }
+
                 Uri uri = getActivity().getContentResolver().insert(
                         MovieEntity.CONTENT_URI, values);
 

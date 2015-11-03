@@ -227,6 +227,8 @@ public class Movie implements Parcelable {
 
             movie.id = source.readLong();
             movie.backdrop_path = source.readString();
+            movie.popularity = source.readDouble();
+            movie.vote_count = source.readInt();
 //            movie.favorite = source.readByte() != 0;
 
             return movie;
