@@ -248,6 +248,14 @@ public class DetailMovieFragment extends Fragment implements IDetailMovie {
                 rateTextView.setText("Average Rating: " + movieDetail.getVote_average().toString().concat("/10"));
                 textViewOverview.setText(movieDetail.getOverview());
 
+                if (movieDetail.getPopularity()==null){
+                    movieDetail.setPopularity(0.0);
+                }
+
+                if (movieDetail.getVote_count()==null){
+                    movieDetail.setVote_count(0);
+                }
+
 //                final LinearLayout lm = (LinearLayout) getActivity().findViewById(R.id.videosLayout);
                 LinearLayout.LayoutParams params = new LinearLayout.LayoutParams(
                         android.app.ActionBar.LayoutParams.WRAP_CONTENT, android.app.ActionBar.LayoutParams.WRAP_CONTENT);
