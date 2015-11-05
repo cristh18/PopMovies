@@ -99,6 +99,9 @@ public class MoviesFragment extends Fragment {
             @Override
             public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
                 Movie movie = customListAdapter.getItem(i);
+                if (movie.getRuntime() == null){
+                    movie.setRuntime(0);
+                }
                 comm.response(movie);
 
             }

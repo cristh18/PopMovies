@@ -2,10 +2,12 @@ package com.example.cristhian.popmovies;
 
 import org.json.JSONObject;
 
+import java.io.Serializable;
+
 /**
  * Created by Cristhian on 01/08/2015.
  */
-public class MovieVideoDetail {
+public class MovieVideoDetail implements Serializable {
 
     private String id;
 

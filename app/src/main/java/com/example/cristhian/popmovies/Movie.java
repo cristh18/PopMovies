@@ -225,11 +225,29 @@ public class Movie implements Parcelable {
 
             Movie movie = new Movie();
 
-            movie.id = source.readLong();
-            movie.backdrop_path = source.readString();
-            movie.popularity = source.readDouble();
-            movie.vote_count = source.readInt();
+//            movie.id = source.readLong();
+//            movie.backdrop_path = source.readString();
+//            movie.popularity = source.readDouble();
+//            movie.vote_count = source.readInt();
 //            movie.favorite = source.readByte() != 0;
+
+            movie.id = source.readLong();
+            movie.adult = source.readByte() != 0;
+            movie.backdrop_path = source.readString();
+            movie.genre_ids = source.readArrayList(Movie.class.getClassLoader());
+            movie.original_language = source.readString();
+            movie.original_title = source.readString();
+            movie.overview = source.readString();
+            movie.release_date = source.readString();
+            movie.poster_path = source.readString();
+            movie.popularity = source.readDouble();
+            movie.title = source.readString();
+            movie.video = source.readByte() != 0;
+            movie.vote_average = source.readDouble();
+            movie.vote_count = source.readInt();
+            movie.favorite = source.readByte() != 0;
+            movie.runtime = source.readInt();
+            movie.videos = source.readArrayList(Movie.class.getClassLoader());
 
             return movie;
 
@@ -250,7 +268,9 @@ public class Movie implements Parcelable {
     @Override
     public void writeToParcel(Parcel parcel, int i) {
         parcel.writeLong(id);
+        parcel.writeByte((byte)(adult ? 1 : 0));
         parcel.writeString(backdrop_path);
+        parcel.writeList(genre_ids);
         parcel.writeString(original_language);
         parcel.writeString(original_title);
         parcel.writeString(overview);
@@ -258,8 +278,11 @@ public class Movie implements Parcelable {
         parcel.writeString(poster_path);
         parcel.writeDouble(popularity);
         parcel.writeString(title);
+        parcel.writeByte((byte)(video ? 1 : 0));
         parcel.writeDouble(vote_average);
         parcel.writeInt(vote_count);
-//        parcel.writeByte((byte)(favorite ? 1 : 0));
+        parcel.writeByte((byte)(favorite ? 1 : 0));
+        parcel.writeInt(runtime);
+        parcel.writeList(videos);
     }
 }
