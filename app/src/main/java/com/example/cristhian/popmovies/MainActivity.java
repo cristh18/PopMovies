@@ -101,18 +101,4 @@ public class MainActivity extends AppCompatActivity implements Communicator {
             getFragmentManager().popBackStack();
         }
     }
-
-
-//    @Override
-//    public void headlineSelected(String headline) {
-//        MoviesFragment moviesFragment = (MoviesFragment)getFragmentManager().findFragmentById(R.id.article_frag);
-//        if (moviesFragment == null){
-//            Intent intent = new Intent(this, DetailMovieActivity.class);
-//            intent.putExtra("headline", headline);
-//            startActivity(intent);
-//        }else {
-//            moviesFragment.updateInfo(headline);
-//        }
-//
-//    }
 }

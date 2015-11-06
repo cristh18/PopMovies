@@ -40,6 +40,8 @@ public class MoviesFragment extends Fragment {
 
     private List<Movie> favoriteMovies;
 
+    int option_selected;
+
     public MoviesFragment() {
         valueSorts = "popularity.desc";
     }
@@ -57,17 +59,16 @@ public class MoviesFragment extends Fragment {
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-
         if (savedInstanceState != null) {
             int option = savedInstanceState.getInt("optionSelected");
             Log.e(LOG_TAG, "Option selected: " + option);
             if (option == R.id.action_most_popular) {
                 valueSorts = "popularity.desc";
                 option_selected = R.id.action_most_popular;
-            }else if (option == R.id.action_highest_rated){
+            } else if (option == R.id.action_highest_rated) {
                 valueSorts = "vote_average.desc";
                 option_selected = R.id.action_highest_rated;
-            }else if (option == R.id.action_favorites){
+            } else if (option == R.id.action_favorites) {
                 valueSorts = "searchFavorites";
                 option_selected = R.id.action_favorites;
             }
@@ -89,12 +90,12 @@ public class MoviesFragment extends Fragment {
             popularMoviesTask.execute("popularity.desc");
             option_selected = R.id.action_most_popular;
             return true;
-        }else if (id == R.id.action_highest_rated){
+        } else if (id == R.id.action_highest_rated) {
             PopularMoviesTask popularMoviesTask = new PopularMoviesTask();
             popularMoviesTask.execute("vote_average.desc");
             option_selected = R.id.action_highest_rated;
             return true;
-        }else if (id == R.id.action_favorites){
+        } else if (id == R.id.action_favorites) {
             searchFavorites();
             seeFavoriteMovies();
             option_selected = R.id.action_favorites;
@@ -112,12 +113,10 @@ public class MoviesFragment extends Fragment {
         comm = (Communicator) getActivity();
         final List<Movie> movies = new ArrayList<>();
         customListAdapter = new MovieListAdapter(this.getActivity(), movies);
-        //PopularMoviesTask popularMoviesTask = new PopularMoviesTask();
-        //popularMoviesTask.execute(valueSorts);
-        if (!valueSorts.equalsIgnoreCase("searchFavorites")){
+        if (!valueSorts.equalsIgnoreCase("searchFavorites")) {
             PopularMoviesTask popularMoviesTask = new PopularMoviesTask();
             popularMoviesTask.execute(valueSorts);
-        }else {
+        } else {
             searchFavorites();
             seeFavoriteMovies();
         }
@@ -129,7 +128,7 @@ public class MoviesFragment extends Fragment {
             @Override
             public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
                 Movie movie = customListAdapter.getItem(i);
-                if (movie.getRuntime() == null){
+                if (movie.getRuntime() == null) {
                     movie.setRuntime(0);
                 }
                 comm.response(movie);
@@ -148,7 +147,7 @@ public class MoviesFragment extends Fragment {
         return valueSorts;
     }
 
-    private void searchFavorites(){
+    private void searchFavorites() {
 
         favoriteMovies = new ArrayList<>();
 
@@ -168,8 +167,8 @@ public class MoviesFragment extends Fragment {
         };
 
         // Defines a string to contain the selection clause
-       String selectionClause = null;
-       selectionClause = null;
+        String selectionClause = null;
+        selectionClause = null;
 
         // An array to contain selection arguments
         String[] selectionArgs = null;
@@ -213,11 +212,11 @@ public class MoviesFragment extends Fragment {
             } while (cursor.moveToNext());
         }
     }
-    
-    private void seeFavoriteMovies(){
+
+    private void seeFavoriteMovies() {
         customListAdapter.clear();
         int i = 1;
-        for (Movie m:favoriteMovies) {
+        for (Movie m : favoriteMovies) {
             Log.i("TestMovie", "Movie ".concat(String.valueOf(i)).concat(": ").concat(m.getOriginal_title()));
             seeVideoMovies(m);
             i++;
@@ -262,10 +261,10 @@ public class MoviesFragment extends Fragment {
     }
 
 
-    private void seeVideoMovies(Movie movie){
-        if (movie.getVideos().size()>0){
+    private void seeVideoMovies(Movie movie) {
+        if (movie.getVideos().size() > 0) {
             int j = 0;
-            for (MovieVideoDetail v:movie.getVideos()) {
+            for (MovieVideoDetail v : movie.getVideos()) {
                 Log.i("TestMovieVideo", "Video ".concat(String.valueOf(j)).concat(": ").concat(v.getId()));
                 j++;
             }
@@ -274,12 +273,7 @@ public class MoviesFragment extends Fragment {
 
     @Override
     public void onSaveInstanceState(Bundle outState) {
-        Bundle bundle = new Bundle();
         outState.putInt("optionSelected", option_selected);
         super.onSaveInstanceState(outState);
     }
-
-
-    int option_selected;
-
 }
