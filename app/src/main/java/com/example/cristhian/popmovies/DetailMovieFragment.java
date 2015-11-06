@@ -45,6 +45,8 @@ public class DetailMovieFragment extends Fragment implements IDetailMovie {
 
     LinearLayout lm;
 
+    LinearLayout lr;
+
     MovieProvider movieProvider;
 
     public DetailMovieFragment() {
@@ -83,6 +85,8 @@ public class DetailMovieFragment extends Fragment implements IDetailMovie {
         favoriteButton = (Button) rootView.findViewById(R.id.favoriteButton);
 
         lm = (LinearLayout) rootView.findViewById(R.id.videosLayout);
+
+        lr = (LinearLayout) rootView.findViewById(R.id.reviewsLayout);
 
         if (movieDetail == null) {
             movieDetail = new MovieDetail();
@@ -166,6 +170,7 @@ public class DetailMovieFragment extends Fragment implements IDetailMovie {
         Log.e("TEST", "responseDetailMovie");
         if (movieDetail != null) {
             lm.removeAllViews();
+            lr.removeAllViews();
             this.movieDetail = movieDetail;
             if (image_header_detail != null) {
 
@@ -228,6 +233,18 @@ public class DetailMovieFragment extends Fragment implements IDetailMovie {
                     ll.addView(trailerTextView);
 
                     lm.addView(ll);
+                }
+
+                for (int i = 0; i < movieDetail.getReviews().size(); i++) {
+                    MovieReviewDetail movieReviewDetail = movieDetail.getReviews().get(i);
+
+                    TextView reviewTitle = new TextView(getActivity());
+                    reviewTitle.setText("Review " + (i+1));
+                    lr.addView(reviewTitle);
+
+                    TextView reviewText = new TextView(getActivity());
+                    reviewText.setText(movieReviewDetail.getContent());
+                    lr.addView(reviewText);
                 }
 
             }

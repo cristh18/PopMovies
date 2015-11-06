@@ -5,6 +5,7 @@ import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
 
 import com.example.cristhian.popmovies.models.MovieEntity;
+import com.example.cristhian.popmovies.models.ReviewEntity;
 import com.example.cristhian.popmovies.models.VideoEntity;
 
 /**
@@ -60,8 +61,25 @@ public class MovieDbHelper extends SQLiteOpenHelper {
 
                 " );";
 
+        final String SQL_CREATE_REVIEW_TABLE = " CREATE TABLE " + ReviewEntity.TABLE_NAME + " (" +
+                ReviewEntity._ID + " INTEGER PRIMARY KEY AUTOINCREMENT," +
+
+                // the ID of the location entry associated with this weather data
+                ReviewEntity.COLUMN_MOV_KEY + " INTEGER NOT NULL, " +
+                ReviewEntity.COLUMN_REVIEW_ID + " TEXT NOT NULL, " +
+                ReviewEntity.COLUMN_AUTHOR + " TEXT NOT NULL, " +
+                ReviewEntity.COLUMN_CONTENT + " TEXT NOT NULL," +
+                ReviewEntity.COLUMN_URL + " TEXT NOT NULL, " +
+
+                // Set up the location column as a foreign key to location table.
+                " FOREIGN KEY (" + VideoEntity.COLUMN_MOV_KEY + ") REFERENCES " +
+                MovieEntity.TABLE_NAME + " (" + MovieEntity._ID + ") " +
+
+                " );";
+
         sqLiteDatabase.execSQL(SQL_CREATE_MOVIE_TABLE);
         sqLiteDatabase.execSQL(SQL_CREATE_VIDEO_TABLE);
+        sqLiteDatabase.execSQL(SQL_CREATE_REVIEW_TABLE);
 
     }
 
@@ -69,6 +87,7 @@ public class MovieDbHelper extends SQLiteOpenHelper {
     public void onUpgrade(SQLiteDatabase sqLiteDatabase, int i, int i1) {
         sqLiteDatabase.execSQL("DROP TABLE IF EXISTS " + MovieEntity.TABLE_NAME);
         sqLiteDatabase.execSQL("DROP TABLE IF EXISTS " + VideoEntity.TABLE_NAME);
+        sqLiteDatabase.execSQL("DROP TABLE IF EXISTS " + ReviewEntity.TABLE_NAME);
         onCreate(sqLiteDatabase);
     }
 }

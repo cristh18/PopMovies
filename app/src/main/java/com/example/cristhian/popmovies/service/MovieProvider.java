@@ -15,6 +15,7 @@ import android.net.Uri;
 import android.support.annotation.Nullable;
 
 import com.example.cristhian.popmovies.models.MovieEntity;
+import com.example.cristhian.popmovies.models.ReviewEntity;
 import com.example.cristhian.popmovies.models.VideoEntity;
 import com.example.cristhian.popmovies.repository.MovieContract;
 import com.example.cristhian.popmovies.repository.MovieDbHelper;
@@ -29,7 +30,8 @@ public class MovieProvider extends ContentProvider {
 
     static final int MOVIE = 100;
     static final int VIDEO = 200;
-    static final int MOVIE_WITH_VIDEOS = 300;
+    static final int REVIEW = 300;
+    static final int MOVIE_WITH_VIDEOS = 400; //and review
 
     @Override
     public boolean onCreate() {
@@ -44,6 +46,7 @@ public class MovieProvider extends ContentProvider {
 
         matcher.addURI(authority, MovieContract.PATH_VIDEO, VIDEO);
         matcher.addURI(authority, MovieContract.PATH_MOVIE, MOVIE);
+        matcher.addURI(authority, MovieContract.PATH_REVIEW, REVIEW);
         matcher.addURI(authority, MovieContract.PATH_VIDEO + "/*", MOVIE_WITH_VIDEOS);
 
         return matcher;
@@ -56,13 +59,27 @@ public class MovieProvider extends ContentProvider {
 
         //This is an inner join which looks like
         //video INNER JOIN movie ON video.movie_id = movie.movie_id
-        sVideosByMovieQueryBuilder.setTables(
-                VideoEntity.TABLE_NAME + " INNER JOIN " +
-                        MovieEntity.TABLE_NAME +
-                        " ON " + VideoEntity.TABLE_NAME +
-                        "." + VideoEntity.COLUMN_MOV_KEY +
-                        " = " + MovieEntity.TABLE_NAME +
-                        "." + MovieEntity.COLUMN_MOVIE_ID);
+//        sVideosByMovieQueryBuilder.setTables(
+//                VideoEntity.TABLE_NAME + " INNER JOIN " +
+//                        MovieEntity.TABLE_NAME +
+//                        " ON " + VideoEntity.TABLE_NAME +
+//                        "." + VideoEntity.COLUMN_MOV_KEY +
+//                        " = " + MovieEntity.TABLE_NAME +
+//                        "." + MovieEntity.COLUMN_MOVIE_ID);
+
+        sVideosByMovieQueryBuilder.setTables(MovieEntity.TABLE_NAME + " INNER JOIN " +
+                VideoEntity.TABLE_NAME +
+                " ON " + MovieEntity.TABLE_NAME +
+                "." + MovieEntity.COLUMN_MOVIE_ID +
+                " = " + VideoEntity.TABLE_NAME +
+                "." + VideoEntity.COLUMN_MOV_KEY
+                + " INNER JOIN " +
+                ReviewEntity.TABLE_NAME +
+                " ON " + MovieEntity.TABLE_NAME +
+                "." + MovieEntity.COLUMN_MOVIE_ID +
+                " = " + ReviewEntity.TABLE_NAME +
+                "." + ReviewEntity.COLUMN_MOV_KEY);
+
     }
 
     //movie.movie_id = ?
@@ -103,6 +120,12 @@ public class MovieProvider extends ContentProvider {
                 retCursor = mOpenHelper.getReadableDatabase().query(MovieEntity.TABLE_NAME, projection, selection, selectionArgs, null, null, sortOrder);
                 break;
             }
+
+            case REVIEW: {
+                retCursor = mOpenHelper.getReadableDatabase().query(ReviewEntity.TABLE_NAME, projection, selection, selectionArgs, null, null, sortOrder);
+                break;
+            }
+
             case MOVIE_WITH_VIDEOS: {
                 retCursor = getVideosByMovie(uri, projection, sortOrder);
                 break;
@@ -126,6 +149,8 @@ public class MovieProvider extends ContentProvider {
             case MOVIE:
                 return MovieEntity.CONTENT_TYPE;
             case VIDEO:
+                return VideoEntity.CONTENT_TYPE;
+            case REVIEW:
                 return VideoEntity.CONTENT_TYPE;
             case MOVIE_WITH_VIDEOS:
                 return VideoEntity.CONTENT_TYPE;
@@ -158,6 +183,14 @@ public class MovieProvider extends ContentProvider {
                     throw new android.database.SQLException("Failed to insert row into " + uri);
                 break;
             }
+            case REVIEW: {
+                long _id = db.insert(VideoEntity.TABLE_NAME, null, values);
+                if (_id > 0)
+                    returnUri = VideoEntity.buildVideoUri(_id);
+                else
+                    throw new android.database.SQLException("Failed to insert row into " + uri);
+                break;
+            }
             default:
                 throw new UnsupportedOperationException("Unknown uri: " + uri);
         }
@@ -180,6 +213,9 @@ public class MovieProvider extends ContentProvider {
             case MOVIE:
                 rowsDeleted = db.delete(MovieEntity.TABLE_NAME, selection, selectionArgs);
                 break;
+            case REVIEW:
+                rowsDeleted = db.delete(MovieEntity.TABLE_NAME, selection, selectionArgs);
+                break;
             default:
                 throw new UnsupportedOperationException("Unknown uri: " + uri);
         }
@@ -200,6 +236,9 @@ public class MovieProvider extends ContentProvider {
                 rowsUpdated = db.update(VideoEntity.TABLE_NAME, values, selection, selectionArgs);
                 break;
             case MOVIE:
+                rowsUpdated = db.update(MovieEntity.TABLE_NAME, values, selection, selectionArgs);
+                break;
+            case REVIEW:
                 rowsUpdated = db.update(MovieEntity.TABLE_NAME, values, selection, selectionArgs);
                 break;
             default:

@@ -46,6 +46,8 @@ public class Movie implements Parcelable {
 
     private List<MovieVideoDetail> videos;
 
+    private List<MovieReviewDetail> reviews;
+
     public Movie(JSONObject jsonObject) {
         //this.id = Long.parseLong(jsonObject.optString("id").toString());
 
@@ -219,18 +221,19 @@ public class Movie implements Parcelable {
         this.videos = videos;
     }
 
+    public List<MovieReviewDetail> getReviews() {
+        return reviews;
+    }
+
+    public void setReviews(List<MovieReviewDetail> reviews) {
+        this.reviews = reviews;
+    }
+
     public static final Parcelable.Creator<Movie> CREATOR = new Creator<Movie>() {
 
         public Movie createFromParcel(Parcel source) {
 
             Movie movie = new Movie();
-
-//            movie.id = source.readLong();
-//            movie.backdrop_path = source.readString();
-//            movie.popularity = source.readDouble();
-//            movie.vote_count = source.readInt();
-//            movie.favorite = source.readByte() != 0;
-
             movie.id = source.readLong();
             movie.adult = source.readByte() != 0;
             movie.backdrop_path = source.readString();
@@ -248,6 +251,7 @@ public class Movie implements Parcelable {
             movie.favorite = source.readByte() != 0;
             movie.runtime = source.readInt();
             movie.videos = source.readArrayList(Movie.class.getClassLoader());
+            movie.reviews = source.readArrayList(Movie.class.getClassLoader());
 
             return movie;
 
@@ -278,11 +282,12 @@ public class Movie implements Parcelable {
         parcel.writeString(poster_path);
         parcel.writeDouble(popularity);
         parcel.writeString(title);
-        parcel.writeByte((byte)(video ? 1 : 0));
+        parcel.writeByte((byte) (video ? 1 : 0));
         parcel.writeDouble(vote_average);
         parcel.writeInt(vote_count);
-        parcel.writeByte((byte)(favorite ? 1 : 0));
+        parcel.writeByte((byte) (favorite ? 1 : 0));
         parcel.writeInt(runtime);
         parcel.writeList(videos);
+        parcel.writeList(reviews);
     }
 }

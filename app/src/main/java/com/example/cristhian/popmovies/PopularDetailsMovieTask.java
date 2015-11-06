@@ -191,18 +191,54 @@ public class PopularDetailsMovieTask extends AsyncTask<String, MovieDetail, Movi
 
     }
 
-    private MovieDetail getMovieData(String movieData, String movieVideoData) throws JSONException {
+    public String searchReviewsMovie(String id) {
+        HttpURLConnection urlConnection = null;
+        BufferedReader reader = null;
+
+        String movieVideoJsonStr = null;
+        String movieId = id;
+
+        try {
+            final String URL = "http://api.themoviedb.org/3/movie/".concat(movieId).concat("/reviews").concat("?");
+            final String API_KEY_PARAM = "api_key";
+
+            OkHttpClient client = new OkHttpClient();
+            String urlWithParams = URL + API_KEY_PARAM + "=" + API_KEY;
+
+            Request request = new Request.Builder()
+                    .url(urlWithParams)
+                    .build();
+
+            Response response = client.newCall(request).execute();
+            return response.body().string();
+        } catch (Exception e) {
+            e.printStackTrace();
+            return "";
+        }
+
+
+    }
+
+    private MovieDetail getMovieData(String movieData, String movieVideoData, String movieReviewData) throws JSONException {
         final String RESULTS = "results";
         MovieDetail movieDetail = new MovieDetail();
         List<MovieVideoDetail> videos = new ArrayList<>();
+        List<MovieReviewDetail> reviews = new ArrayList<>();
         JSONObject forecastJson = new JSONObject(movieData);
         JSONObject movieVideosJson = new JSONObject(movieVideoData);
+        JSONObject movieReviewsJson = new JSONObject(movieReviewData);
         JSONArray videosArray = movieVideosJson.getJSONArray(RESULTS);
+        JSONArray reviewsArray = movieReviewsJson.getJSONArray(RESULTS);
 
         for (int i = 0; i < videosArray.length(); i++) {
             videos.add(new MovieVideoDetail(videosArray.getJSONObject(i)));
         }
         movieDetail.setVideos(videos);
+
+        for (int i = 0; i < reviewsArray.length(); i++) {
+            reviews.add(new MovieReviewDetail(reviewsArray.getJSONObject(i)));
+        }
+        movieDetail.setReviews(reviews);
 
         movieDetail.setId(forecastJson.getLong("id"));
         movieDetail.setOriginal_title(forecastJson.getString("original_title"));
@@ -220,9 +256,10 @@ public class PopularDetailsMovieTask extends AsyncTask<String, MovieDetail, Movi
         if (searchDetailMovie(params[0]) != null) {
             String movieData = searchDetailMovie(params[0]);
             String movieVideoData = searchVideosMovie(params[0]);
+            String movieReviewData = searchReviewsMovie(params[0]);
             try {
-                if (getMovieData(movieData, movieVideoData) != null) {
-                    movieDetailTemp = getMovieData(movieData, movieVideoData);
+                if (getMovieData(movieData, movieVideoData, movieReviewData) != null) {
+                    movieDetailTemp = getMovieData(movieData, movieVideoData, movieReviewData);
                 }
             } catch (JSONException e) {
                 Log.e(LOG_TAG, e.getMessage());

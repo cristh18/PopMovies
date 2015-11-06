@@ -21,6 +21,7 @@ public class MovieDetail implements Parcelable {
     private Double popularity;
     private Integer vote_count;
     private List<MovieVideoDetail> videos;
+    private List<MovieReviewDetail> reviews;
 
     public String getOriginal_title() {
         return original_title;
@@ -112,6 +113,14 @@ public class MovieDetail implements Parcelable {
         this.vote_count = vote_count;
     }
 
+    public List<MovieReviewDetail> getReviews() {
+        return reviews;
+    }
+
+    public void setReviews(List<MovieReviewDetail> reviews) {
+        this.reviews = reviews;
+    }
+
     public static final Parcelable.Creator<MovieDetail> CREATOR = new Creator<MovieDetail>() {
 
         public MovieDetail createFromParcel(Parcel source) {
@@ -129,6 +138,7 @@ public class MovieDetail implements Parcelable {
             movieDetail.popularity = source.readDouble();
             movieDetail.vote_count = source.readInt();
             movieDetail.videos = source.readArrayList(MovieDetail.class.getClassLoader());
+            movieDetail.reviews = source.readArrayList(MovieDetail.class.getClassLoader());
 
             return movieDetail;
 
@@ -159,5 +169,6 @@ public class MovieDetail implements Parcelable {
         parcel.writeDouble(popularity);
         parcel.writeInt(vote_count);
         parcel.writeList(videos);
+        parcel.writeList(reviews);
     }
 }

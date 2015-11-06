@@ -13,4 +13,5 @@ public class MovieContract {
 
     public static final String PATH_MOVIE = "movie";
     public static final String PATH_VIDEO = "video";
+    public static final String PATH_REVIEW = "review";
 }
