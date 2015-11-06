@@ -41,8 +41,6 @@ public class DetailMovieFragment extends Fragment implements IDetailMovie {
 
     Button favoriteButton;
 
-    Button readFavoriteButton;
-
     MovieDetail movieDetail;
 
     LinearLayout lm;
@@ -83,8 +81,6 @@ public class DetailMovieFragment extends Fragment implements IDetailMovie {
         image_header_detail = (ImageView) rootView.findViewById(R.id.image_header_detail);
 
         favoriteButton = (Button) rootView.findViewById(R.id.favoriteButton);
-
-        readFavoriteButton = (Button) rootView.findViewById(R.id.readFavoriteButton);
 
         lm = (LinearLayout) rootView.findViewById(R.id.videosLayout);
 
@@ -137,66 +133,6 @@ public class DetailMovieFragment extends Fragment implements IDetailMovie {
                 }
 
                 Toast.makeText(getActivity(), "Movie Registered", Toast.LENGTH_LONG).show();
-            }
-        });
-
-        readFavoriteButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-
-                final String[] projection = {
-                        MovieEntity._ID,
-                        MovieEntity.COLUMN_MOVIE_ID,
-                        MovieEntity.COLUMN_BACKDROP_PATH,
-                        MovieEntity.COLUMN_ORIGINAL_TITLE,
-                        MovieEntity.COLUMN_OVERVIEW,
-                        MovieEntity.COLUMN_POSTER_PATH,
-                        MovieEntity.COLUMN_RELEASE_DATE,
-                        MovieEntity.COLUMN_RUNTIME,
-                        MovieEntity.COLUMN_VOTE_AVERAGE
-                };
-
-                // Defines a string to contain the selection clause
-                selectionClause = null;
-
-                // An array to contain selection arguments
-                selectionArgs = null;
-
-                // Gets a word from the UI
-                String searchString = "";
-                if (movieDetail != null && movieDetail.getId() != null) {
-                    searchString = movieDetail.getId().toString();
-                    Log.i("TESTMovieSelected", "Movie Selected: ".concat(movieDetail.getId().toString()).concat(" - ").concat(movieDetail.getOriginal_title()));
-                    Log.i("TESTsearchString", "Param busqueda searchString: ".concat(searchString));
-                }
-
-                selectionClause = MovieEntity.COLUMN_MOVIE_ID + "=?";
-                selectionArgs = new String[]{searchString};
-
-                // An ORDER BY clause, or null to get results in the default sort order
-                final String sortOrder = null;
-
-                String original_title = "";
-                Cursor cursor = getActivity().getContentResolver().query(
-                        MovieEntity.CONTENT_URI,
-                        projection,
-                        selectionClause,
-                        selectionArgs,
-                        sortOrder);
-
-                if (cursor.moveToFirst()) {
-                    do {
-                        String movie_title = cursor.getString(cursor.getColumnIndex("original_title"));
-                        original_title = movie_title;
-                        Log.i("TEST1", "Titulo pelicula1: ".concat(movie_title));
-                        Log.i("TEST2", "Titulo pelicula2: ".concat(original_title));
-
-                    } while (cursor.moveToNext());
-                }
-
-                Toast.makeText(getActivity(), "Movie title: ".concat(original_title), Toast.LENGTH_LONG).show();
-                Log.i("TEST3", "Titulo pelicula3: ".concat(original_title));
-
             }
         });
 

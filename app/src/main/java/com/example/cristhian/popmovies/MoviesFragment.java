@@ -19,6 +19,7 @@ import android.widget.GridView;
 import com.example.cristhian.popmovies.models.MovieEntity;
 import com.example.cristhian.popmovies.models.VideoEntity;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -37,6 +38,8 @@ public class MoviesFragment extends Fragment {
 
     Communicator comm;
 
+    private List<Movie> favoriteMovies;
+
     public MoviesFragment() {
         valueSorts = "popularity.desc";
     }
@@ -53,6 +56,23 @@ public class MoviesFragment extends Fragment {
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
+
+        if (savedInstanceState != null) {
+            int option = savedInstanceState.getInt("optionSelected");
+            Log.e(LOG_TAG, "Option selected: " + option);
+            if (option == R.id.action_most_popular) {
+                valueSorts = "popularity.desc";
+                option_selected = R.id.action_most_popular;
+            }else if (option == R.id.action_highest_rated){
+                valueSorts = "vote_average.desc";
+                option_selected = R.id.action_highest_rated;
+            }else if (option == R.id.action_favorites){
+                valueSorts = "searchFavorites";
+                option_selected = R.id.action_favorites;
+            }
+        }
+
         setHasOptionsMenu(true);
     }
 
@@ -67,14 +87,17 @@ public class MoviesFragment extends Fragment {
         if (id == R.id.action_most_popular) {
             PopularMoviesTask popularMoviesTask = new PopularMoviesTask();
             popularMoviesTask.execute("popularity.desc");
+            option_selected = R.id.action_most_popular;
             return true;
         }else if (id == R.id.action_highest_rated){
             PopularMoviesTask popularMoviesTask = new PopularMoviesTask();
             popularMoviesTask.execute("vote_average.desc");
+            option_selected = R.id.action_highest_rated;
             return true;
         }else if (id == R.id.action_favorites){
             searchFavorites();
             seeFavoriteMovies();
+            option_selected = R.id.action_favorites;
             return true;
         }
         return super.onOptionsItemSelected(item);
@@ -89,8 +112,15 @@ public class MoviesFragment extends Fragment {
         comm = (Communicator) getActivity();
         final List<Movie> movies = new ArrayList<>();
         customListAdapter = new MovieListAdapter(this.getActivity(), movies);
-        PopularMoviesTask popularMoviesTask = new PopularMoviesTask();
-        popularMoviesTask.execute(valueSorts);
+        //PopularMoviesTask popularMoviesTask = new PopularMoviesTask();
+        //popularMoviesTask.execute(valueSorts);
+        if (!valueSorts.equalsIgnoreCase("searchFavorites")){
+            PopularMoviesTask popularMoviesTask = new PopularMoviesTask();
+            popularMoviesTask.execute(valueSorts);
+        }else {
+            searchFavorites();
+            seeFavoriteMovies();
+        }
 
         myGridMovieView = (GridView) view.findViewById(R.id.grid_view_pop_movies);
 
@@ -242,6 +272,14 @@ public class MoviesFragment extends Fragment {
         }
     }
 
-    private List<Movie> favoriteMovies;
+    @Override
+    public void onSaveInstanceState(Bundle outState) {
+        Bundle bundle = new Bundle();
+        outState.putInt("optionSelected", option_selected);
+        super.onSaveInstanceState(outState);
+    }
+
+
+    int option_selected;
 
 }
