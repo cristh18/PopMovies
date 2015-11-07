@@ -97,8 +97,10 @@ public class DetailMovieFragment extends Fragment implements IDetailMovie {
         image_header_detail = (ImageView) rootView.findViewById(R.id.image_header_detail);
 
         favoriteButton = (Button) rootView.findViewById(R.id.favoriteButton);
+        favoriteButton.setVisibility(View.INVISIBLE);
 
         removefavoriteButton = (Button) rootView.findViewById(R.id.removeFavoriteButton);
+        removefavoriteButton.setVisibility(View.INVISIBLE);
 
         lm = (LinearLayout) rootView.findViewById(R.id.videosLayout);
 
