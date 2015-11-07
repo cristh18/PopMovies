@@ -26,6 +26,7 @@ import com.example.cristhian.popmovies.service.MovieProvider;
 import com.squareup.picasso.Picasso;
 
 import java.util.ArrayList;
+import java.util.List;
 
 public class DetailMovieFragment extends Fragment implements IDetailMovie {
 
@@ -49,6 +50,14 @@ public class DetailMovieFragment extends Fragment implements IDetailMovie {
     LinearLayout lr;
 
     MovieProvider movieProvider;
+
+    Movie favoriteMovie;
+
+    // Defines a string to contain the selection clause
+    String selectionClause;
+
+    // An array to contain selection arguments
+    String[] selectionArgs;
 
     public DetailMovieFragment() {
 
@@ -98,58 +107,62 @@ public class DetailMovieFragment extends Fragment implements IDetailMovie {
         favoriteButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                ContentValues values = new ContentValues();
-                values.put(MovieEntity.COLUMN_MOVIE_ID, movieDetail.getId());
-                values.put(MovieEntity.COLUMN_BACKDROP_PATH, movieDetail.getBackdrop_path());
-                values.put(MovieEntity.COLUMN_ORIGINAL_TITLE, movieDetail.getOriginal_title());
-                values.put(MovieEntity.COLUMN_OVERVIEW, movieDetail.getOverview());
-                values.put(MovieEntity.COLUMN_POSTER_PATH, movieDetail.getPoster_path());
-                values.put(MovieEntity.COLUMN_RELEASE_DATE, movieDetail.getRelease_date());
-                values.put(MovieEntity.COLUMN_RUNTIME, movieDetail.getRuntime());
-                values.put(MovieEntity.COLUMN_VOTE_AVERAGE, movieDetail.getVote_average());
-
-                if (movieDetail.getPopularity() != null){
-                    values.put(MovieEntity.COLUMN_POPULARITY, movieDetail.getPopularity());
+                if (validateFavoriteMovie(movieDetail.getId()) == true){
+                    Toast.makeText(getActivity(), "This film is already selected as favorite", Toast.LENGTH_LONG).show();
                 }else {
-                    values.put(MovieEntity.COLUMN_POPULARITY, 0.0);
+                    ContentValues values = new ContentValues();
+                    values.put(MovieEntity.COLUMN_MOVIE_ID, movieDetail.getId());
+                    values.put(MovieEntity.COLUMN_BACKDROP_PATH, movieDetail.getBackdrop_path());
+                    values.put(MovieEntity.COLUMN_ORIGINAL_TITLE, movieDetail.getOriginal_title());
+                    values.put(MovieEntity.COLUMN_OVERVIEW, movieDetail.getOverview());
+                    values.put(MovieEntity.COLUMN_POSTER_PATH, movieDetail.getPoster_path());
+                    values.put(MovieEntity.COLUMN_RELEASE_DATE, movieDetail.getRelease_date());
+                    values.put(MovieEntity.COLUMN_RUNTIME, movieDetail.getRuntime());
+                    values.put(MovieEntity.COLUMN_VOTE_AVERAGE, movieDetail.getVote_average());
+
+                    if (movieDetail.getPopularity() != null){
+                        values.put(MovieEntity.COLUMN_POPULARITY, movieDetail.getPopularity());
+                    }else {
+                        values.put(MovieEntity.COLUMN_POPULARITY, 0.0);
+                    }
+
+                    if (movieDetail.getVote_count() != null){
+                        values.put(MovieEntity.COLUMN_VOTE_COUNT, movieDetail.getVote_count());
+                    }else {
+                        values.put(MovieEntity.COLUMN_VOTE_COUNT, 0);
+                    }
+
+                    Uri uri = getActivity().getContentResolver().insert(
+                            MovieEntity.CONTENT_URI, values);
+
+                    for (MovieVideoDetail v : movieDetail.getVideos()) {
+                        ContentValues valuesVideo = new ContentValues();
+                        valuesVideo.put(VideoEntity.COLUMN_MOV_KEY, movieDetail.getId());
+                        valuesVideo.put(VideoEntity.COLUMN_KEY, v.getKey());
+                        valuesVideo.put(VideoEntity.COLUMN_NAME, v.getName());
+                        valuesVideo.put(VideoEntity.COLUMN_SITE, v.getSite());
+                        valuesVideo.put(VideoEntity.COLUMN_SIZE, v.getSize());
+                        valuesVideo.put(VideoEntity.COLUMN_TYPE, v.getType());
+                        valuesVideo.put(VideoEntity.COLUMN_VIDEO_ID, v.getId());
+
+                        Uri uriVideo = getActivity().getContentResolver().insert(
+                                VideoEntity.CONTENT_URI, valuesVideo);
+                    }
+
+                    for (MovieReviewDetail v : movieDetail.getReviews()) {
+                        ContentValues valuesReview = new ContentValues();
+                        valuesReview.put(ReviewEntity.COLUMN_MOV_KEY, movieDetail.getId());
+                        valuesReview.put(ReviewEntity.COLUMN_REVIEW_ID, v.getId());
+                        valuesReview.put(ReviewEntity.COLUMN_AUTHOR, v.getAuthor());
+                        valuesReview.put(ReviewEntity.COLUMN_CONTENT, v.getContent());
+                        valuesReview.put(ReviewEntity.COLUMN_URL, v.getUrl());
+
+                        Uri uriReview = getActivity().getContentResolver().insert(
+                                ReviewEntity.CONTENT_URI, valuesReview);
+                    }
+
+                    Toast.makeText(getActivity(), "Movie Registered", Toast.LENGTH_LONG).show();
                 }
-
-                if (movieDetail.getVote_count() != null){
-                    values.put(MovieEntity.COLUMN_VOTE_COUNT, movieDetail.getVote_count());
-                }else {
-                    values.put(MovieEntity.COLUMN_VOTE_COUNT, 0);
-                }
-
-                Uri uri = getActivity().getContentResolver().insert(
-                        MovieEntity.CONTENT_URI, values);
-
-                for (MovieVideoDetail v : movieDetail.getVideos()) {
-                    ContentValues valuesVideo = new ContentValues();
-                    valuesVideo.put(VideoEntity.COLUMN_MOV_KEY, movieDetail.getId());
-                    valuesVideo.put(VideoEntity.COLUMN_KEY, v.getKey());
-                    valuesVideo.put(VideoEntity.COLUMN_NAME, v.getName());
-                    valuesVideo.put(VideoEntity.COLUMN_SITE, v.getSite());
-                    valuesVideo.put(VideoEntity.COLUMN_SIZE, v.getSize());
-                    valuesVideo.put(VideoEntity.COLUMN_TYPE, v.getType());
-                    valuesVideo.put(VideoEntity.COLUMN_VIDEO_ID, v.getId());
-
-                    Uri uriVideo = getActivity().getContentResolver().insert(
-                            VideoEntity.CONTENT_URI, valuesVideo);
-                }
-
-                for (MovieReviewDetail v : movieDetail.getReviews()) {
-                    ContentValues valuesReview = new ContentValues();
-                    valuesReview.put(ReviewEntity.COLUMN_MOV_KEY, movieDetail.getId());
-                    valuesReview.put(ReviewEntity.COLUMN_REVIEW_ID, v.getId());
-                    valuesReview.put(ReviewEntity.COLUMN_AUTHOR, v.getAuthor());
-                    valuesReview.put(ReviewEntity.COLUMN_CONTENT, v.getContent());
-                    valuesReview.put(ReviewEntity.COLUMN_URL, v.getUrl());
-
-                    Uri uriReview = getActivity().getContentResolver().insert(
-                            ReviewEntity.CONTENT_URI, valuesReview);
-                }
-
-                Toast.makeText(getActivity(), "Movie Registered", Toast.LENGTH_LONG).show();
             }
         });
 
@@ -298,9 +311,41 @@ public class DetailMovieFragment extends Fragment implements IDetailMovie {
         }
     }
 
-    // Defines a string to contain the selection clause
-    String selectionClause;
+    private Movie isFavoriteMovie(Long movieId) {
+        favoriteMovie = new Movie();
 
-    // An array to contain selection arguments
-    String[] selectionArgs;
+        String[] projection = {
+                MovieEntity._ID,
+                MovieEntity.COLUMN_MOVIE_ID,
+                MovieEntity.COLUMN_ORIGINAL_TITLE
+        };
+
+        Cursor cursor = getActivity().getContentResolver().query(MovieEntity.buildMovieUri(movieId),
+                projection,
+                null,
+                null,
+                null);
+
+        if (cursor.moveToFirst()) {
+            do {
+                Movie movie = new Movie();
+                movie.setId(cursor.getLong(cursor.getColumnIndex("movie_id")));
+                movie.setOriginal_title(cursor.getString(cursor.getColumnIndex("original_title")));
+                favoriteMovie = movie;
+
+            } while (cursor.moveToNext());
+        }
+
+        return favoriteMovie;
+    }
+
+    private boolean validateFavoriteMovie(Long movieId){
+        boolean isFavorite = false;
+        if (isFavoriteMovie(movieId).getId() != null){
+            isFavorite = true;
+        }else {
+            isFavorite = false;
+        }
+        return isFavorite;
+    }
 }

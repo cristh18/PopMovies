@@ -39,10 +39,4 @@ public class ReviewEntity implements BaseColumns {
         return uri.getPathSegments().get(1);
     }
 
-    /*
-           Student: This is the buildWeatherLocation function you filled in.
-        */
-    public static Uri buildReviewMovie(String movieSetting) {
-        return CONTENT_URI.buildUpon().appendPath(movieSetting).build();
-    }
 }

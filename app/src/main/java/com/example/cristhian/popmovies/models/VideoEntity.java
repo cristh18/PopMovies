@@ -22,10 +22,8 @@ public class VideoEntity implements BaseColumns {
 
     public static final String TABLE_NAME = "video";
 
-    // Column with the foreign key into the location table.
     public static final String COLUMN_MOV_KEY = "movie_id";
 
-    // Weather id as returned by API, to identify the icon to be used
     public static final String COLUMN_VIDEO_ID = "video_id";
     public static final String COLUMN_NAME = "name";
     public static final String COLUMN_KEY = "key";
@@ -41,10 +39,4 @@ public class VideoEntity implements BaseColumns {
         return uri.getPathSegments().get(1);
     }
 
-    /*
-           Student: This is the buildWeatherLocation function you filled in.
-        */
-    public static Uri buildVideoMovie(String movieSetting) {
-        return CONTENT_URI.buildUpon().appendPath(movieSetting).build();
-    }
 }

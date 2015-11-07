@@ -10,7 +10,7 @@ import com.example.cristhian.popmovies.repository.MovieContract;
 /**
  * Created by Cristhian on 10/27/2015.
  */
-public class MovieEntity implements BaseColumns{
+public class MovieEntity implements BaseColumns {
 
     public static final Uri CONTENT_URI =
             MovieContract.BASE_CONTENT_URI.buildUpon().appendPath(MovieContract.PATH_MOVIE).build();
@@ -44,6 +44,10 @@ public class MovieEntity implements BaseColumns{
 
     public static Uri buildMovieUri(long id) {
         return ContentUris.withAppendedId(CONTENT_URI, id);
+    }
+
+    public static String getMovieFromUri(Uri uri) {
+        return uri.getPathSegments().get(1);
     }
 
 

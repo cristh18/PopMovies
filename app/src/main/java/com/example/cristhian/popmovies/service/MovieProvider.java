@@ -33,6 +33,7 @@ public class MovieProvider extends ContentProvider {
     static final int REVIEW = 300;
     static final int MOVIE_WITH_VIDEOS = 400;
     static final int MOVIE_WITH_REVIEWS = 500;
+    static final int MOVIE_BY_MOVIE_ID = 600;
 
     @Override
     public boolean onCreate() {
@@ -50,6 +51,7 @@ public class MovieProvider extends ContentProvider {
         matcher.addURI(authority, MovieContract.PATH_REVIEW, REVIEW);
         matcher.addURI(authority, MovieContract.PATH_VIDEO + "/*", MOVIE_WITH_VIDEOS);
         matcher.addURI(authority, MovieContract.PATH_REVIEW + "/*", MOVIE_WITH_REVIEWS);
+        matcher.addURI(authority, MovieContract.PATH_MOVIE + "/*", MOVIE_BY_MOVIE_ID);
 
         return matcher;
     }
@@ -57,6 +59,8 @@ public class MovieProvider extends ContentProvider {
     private static final SQLiteQueryBuilder sVideosByMovieQueryBuilder;
 
     private static final SQLiteQueryBuilder sReviewsByMovieQueryBuilder;
+
+    private static final SQLiteQueryBuilder sMovieByIdQueryBuilder;
 
     static {
         sVideosByMovieQueryBuilder = new SQLiteQueryBuilder();
@@ -82,6 +86,13 @@ public class MovieProvider extends ContentProvider {
                         "." + MovieEntity.COLUMN_MOVIE_ID +
                         " = " + ReviewEntity.TABLE_NAME +
                         "." + ReviewEntity.COLUMN_MOV_KEY);
+    }
+
+    static {
+        sMovieByIdQueryBuilder = new SQLiteQueryBuilder();
+
+        sMovieByIdQueryBuilder.setTables(
+                MovieEntity.TABLE_NAME);
     }
 
     //movie.movie_id = ?
@@ -125,6 +136,24 @@ public class MovieProvider extends ContentProvider {
         );
     }
 
+    private Cursor getMoviesById(Uri uri, String[] projection, String sortOrder) {
+        String movie = MovieEntity.getMovieFromUri(uri);
+        String[] selectionArgs;
+        String selection;
+
+        selection = sMovieSettingSelection;
+        selectionArgs = new String[]{movie};
+
+        return sMovieByIdQueryBuilder.query(mOpenHelper.getReadableDatabase(),
+                projection,
+                selection,
+                selectionArgs,
+                null,
+                null,
+                sortOrder
+        );
+    }
+
     @Nullable
     @Override
     public Cursor query(Uri uri, String[] projection, String selection, String[] selectionArgs,
@@ -156,6 +185,11 @@ public class MovieProvider extends ContentProvider {
                 break;
             }
 
+            case MOVIE_BY_MOVIE_ID: {
+                retCursor = getMoviesById(uri, projection, sortOrder);
+                break;
+            }
+
             default:
                 throw new UnsupportedOperationException("Unknown uri: " + uri);
         }
@@ -181,6 +215,8 @@ public class MovieProvider extends ContentProvider {
                 return VideoEntity.CONTENT_TYPE;
             case MOVIE_WITH_REVIEWS:
                 return ReviewEntity.CONTENT_TYPE;
+            case MOVIE_BY_MOVIE_ID:
+                return MovieEntity.CONTENT_TYPE;
             default:
                 throw new UnsupportedOperationException("Unknown uri: " + uri);
         }
