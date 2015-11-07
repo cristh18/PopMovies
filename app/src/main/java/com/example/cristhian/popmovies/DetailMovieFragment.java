@@ -20,6 +20,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.example.cristhian.popmovies.models.MovieEntity;
+import com.example.cristhian.popmovies.models.ReviewEntity;
 import com.example.cristhian.popmovies.models.VideoEntity;
 import com.example.cristhian.popmovies.service.MovieProvider;
 import com.squareup.picasso.Picasso;
@@ -134,6 +135,18 @@ public class DetailMovieFragment extends Fragment implements IDetailMovie {
 
                     Uri uriVideo = getActivity().getContentResolver().insert(
                             VideoEntity.CONTENT_URI, valuesVideo);
+                }
+
+                for (MovieReviewDetail v : movieDetail.getReviews()) {
+                    ContentValues valuesReview = new ContentValues();
+                    valuesReview.put(ReviewEntity.COLUMN_MOV_KEY, movieDetail.getId());
+                    valuesReview.put(ReviewEntity.COLUMN_REVIEW_ID, v.getId());
+                    valuesReview.put(ReviewEntity.COLUMN_AUTHOR, v.getAuthor());
+                    valuesReview.put(ReviewEntity.COLUMN_CONTENT, v.getContent());
+                    valuesReview.put(ReviewEntity.COLUMN_URL, v.getUrl());
+
+                    Uri uriReview = getActivity().getContentResolver().insert(
+                            ReviewEntity.CONTENT_URI, valuesReview);
                 }
 
                 Toast.makeText(getActivity(), "Movie Registered", Toast.LENGTH_LONG).show();
@@ -273,6 +286,12 @@ public class DetailMovieFragment extends Fragment implements IDetailMovie {
                 movieDetail.setVideos(mv.getVideos());
             } else {
                 movieDetail.setVideos(new ArrayList<MovieVideoDetail>());
+            }
+
+            if (mv.getReviews().size() > 0 && !mv.getReviews().isEmpty()) {
+                movieDetail.setReviews(mv.getReviews());
+            } else {
+                movieDetail.setReviews(new ArrayList<MovieReviewDetail>());
             }
 
             responseDetailMovie(movieDetail);

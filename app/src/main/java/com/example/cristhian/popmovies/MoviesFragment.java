@@ -17,6 +17,7 @@ import android.widget.AdapterView;
 import android.widget.GridView;
 
 import com.example.cristhian.popmovies.models.MovieEntity;
+import com.example.cristhian.popmovies.models.ReviewEntity;
 import com.example.cristhian.popmovies.models.VideoEntity;
 
 import java.io.Serializable;
@@ -206,6 +207,7 @@ public class MoviesFragment extends Fragment {
                 movie.setFavorite(true);
 
                 movie.setVideos(searchVideoMovies(movie.getId()));
+                movie.setReviews(searchReviewMovies(movie.getId()));
 
                 favoriteMovies.add(movie);
 
@@ -219,6 +221,7 @@ public class MoviesFragment extends Fragment {
         for (Movie m : favoriteMovies) {
             Log.i("TestMovie", "Movie ".concat(String.valueOf(i)).concat(": ").concat(m.getOriginal_title()));
             seeVideoMovies(m);
+            seeReviewMovies(m);
             i++;
             customListAdapter.add(m);
         }
@@ -270,6 +273,49 @@ public class MoviesFragment extends Fragment {
             }
         }
     }
+
+
+    private List<MovieReviewDetail> searchReviewMovies(Long movieId) {
+        List<MovieReviewDetail> reviews = new ArrayList<>();
+
+        String[] projection = {
+                ReviewEntity.COLUMN_REVIEW_ID,
+                ReviewEntity.COLUMN_AUTHOR,
+                ReviewEntity.COLUMN_CONTENT,
+                ReviewEntity.COLUMN_URL
+        };
+
+        Cursor cursor = getActivity().getContentResolver().query(ReviewEntity.buildReviewUri(movieId),
+                projection,
+                null,
+                null,
+                null);
+
+        if (cursor.moveToFirst()) {
+            do {
+                MovieReviewDetail movieReviewDetail = new MovieReviewDetail();
+                movieReviewDetail.setId(cursor.getString(cursor.getColumnIndex("review_id")));
+                movieReviewDetail.setAuthor(cursor.getString(cursor.getColumnIndex("author")));
+                movieReviewDetail.setContent(cursor.getString(cursor.getColumnIndex("content")));
+                movieReviewDetail.setUrl(cursor.getString(cursor.getColumnIndex("url")));
+                reviews.add(movieReviewDetail);
+
+            } while (cursor.moveToNext());
+        }
+
+        return reviews;
+    }
+
+    private void seeReviewMovies(Movie movie) {
+        if (movie.getReviews().size() > 0) {
+            int j = 0;
+            for (MovieReviewDetail r : movie.getReviews()) {
+                Log.i("TestMovieReview", "Review ".concat(String.valueOf(j)).concat(": ").concat(r.getId()));
+                j++;
+            }
+        }
+    }
+
 
     @Override
     public void onSaveInstanceState(Bundle outState) {

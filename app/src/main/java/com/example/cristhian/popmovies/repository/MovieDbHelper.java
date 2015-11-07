@@ -72,7 +72,7 @@ public class MovieDbHelper extends SQLiteOpenHelper {
                 ReviewEntity.COLUMN_URL + " TEXT NOT NULL, " +
 
                 // Set up the location column as a foreign key to location table.
-                " FOREIGN KEY (" + VideoEntity.COLUMN_MOV_KEY + ") REFERENCES " +
+                " FOREIGN KEY (" + ReviewEntity.COLUMN_MOV_KEY + ") REFERENCES " +
                 MovieEntity.TABLE_NAME + " (" + MovieEntity._ID + ") " +
 
                 " );";
