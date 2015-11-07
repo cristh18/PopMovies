@@ -1,6 +1,7 @@
 package com.example.cristhian.popmovies;
 
 import android.app.Fragment;
+import android.app.FragmentManager;
 import android.content.ContentValues;
 import android.content.Intent;
 import android.database.Cursor;
@@ -16,6 +17,7 @@ import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
+import android.widget.ScrollView;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -42,6 +44,8 @@ public class DetailMovieFragment extends Fragment implements IDetailMovie {
     ImageView image_header_detail;
 
     Button favoriteButton;
+
+    Button removefavoriteButton;
 
     MovieDetail movieDetail;
 
@@ -93,6 +97,8 @@ public class DetailMovieFragment extends Fragment implements IDetailMovie {
         image_header_detail = (ImageView) rootView.findViewById(R.id.image_header_detail);
 
         favoriteButton = (Button) rootView.findViewById(R.id.favoriteButton);
+
+        removefavoriteButton = (Button) rootView.findViewById(R.id.removeFavoriteButton);
 
         lm = (LinearLayout) rootView.findViewById(R.id.videosLayout);
 
@@ -166,6 +172,26 @@ public class DetailMovieFragment extends Fragment implements IDetailMovie {
             }
         });
 
+        removefavoriteButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                removeFavoriteMovieReviews(movieDetail.getId());
+                removeFavoriteMovieVideos(movieDetail.getId());
+                removeFavoriteMovie(movieDetail.getId());
+
+                FragmentManager fragmentManager = getFragmentManager();
+                MoviesFragment moviesFragment = (MoviesFragment) fragmentManager.findFragmentById(R.id.movie_frag);
+                if (moviesFragment == null) {
+                    getActivity().onBackPressed();
+                } else {
+                   LinearLayout contentDetails = (LinearLayout)getActivity().findViewById(R.id.contentDetails);
+                   contentDetails.removeAllViews();
+                   moviesFragment.updateInfo("searchFavorites");
+                }
+            }
+        });
+
+
         Log.e("TEST", "onCreate");
 
         return rootView;
@@ -183,9 +209,13 @@ public class DetailMovieFragment extends Fragment implements IDetailMovie {
     public void updateInfo(Movie mv) {
         if (mv != null) {
             if (mv.isFavorite() == false) {
+                favoriteButton.setVisibility(View.VISIBLE);
+                removefavoriteButton.setVisibility(View.INVISIBLE);
                 PopularDetailsMovieTask popularDetailsMovieTask = new PopularDetailsMovieTask(this);
                 popularDetailsMovieTask.execute(mv.getId().toString());
             } else {
+                favoriteButton.setVisibility(View.INVISIBLE);
+                removefavoriteButton.setVisibility(View.VISIBLE);
                 buildFavoriteMovie(mv);
             }
         }
@@ -347,5 +377,44 @@ public class DetailMovieFragment extends Fragment implements IDetailMovie {
             isFavorite = false;
         }
         return isFavorite;
+    }
+
+    private boolean removeFavoriteMovieReviews(Long movie_id) {
+        boolean result = false;
+        String selection = "movie_id = \"" + movie_id + "\"";
+        int rowsDeleted = getActivity().getContentResolver().delete(
+                ReviewEntity.buildReviewUri(movie_id), selection, null);
+
+        if (rowsDeleted > 0) {
+            result = true;
+        }
+
+        return result;
+    }
+
+    private boolean removeFavoriteMovieVideos(Long movie_id) {
+        boolean result = false;
+        String selection = "movie_id = \"" + movie_id + "\"";
+        int rowsDeleted = getActivity().getContentResolver().delete(
+                VideoEntity.buildVideoUri(movie_id), selection, null);
+
+        if (rowsDeleted > 0) {
+            result = true;
+        }
+
+        return result;
+    }
+
+    private boolean removeFavoriteMovie(Long movie_id) {
+        boolean result = false;
+        String selection = "movie_id = \"" + movie_id + "\"";
+        int rowsDeleted = getActivity().getContentResolver().delete(
+                MovieEntity.buildMovieUri(movie_id), selection, null);
+
+        if (rowsDeleted > 0) {
+            result = true;
+        }
+
+        return result;
     }
 }

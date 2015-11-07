@@ -322,4 +322,23 @@ public class MoviesFragment extends Fragment {
         outState.putInt("optionSelected", option_selected);
         super.onSaveInstanceState(outState);
     }
+
+    @Override
+    public void onResume() {
+        super.onResume();
+        if (option_selected == R.id.action_favorites) {
+            valueSorts = "searchFavorites";
+            option_selected = R.id.action_favorites;
+            searchFavorites();
+            seeFavoriteMovies();
+        }
+    }
+
+    public void updateInfo(String option) {
+
+        if (option.equalsIgnoreCase("searchFavorites")) {
+            searchFavorites();
+            seeFavoriteMovies();
+        }
+    }
 }

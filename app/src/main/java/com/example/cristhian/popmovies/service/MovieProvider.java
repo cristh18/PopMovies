@@ -13,6 +13,7 @@ import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteQueryBuilder;
 import android.net.Uri;
 import android.support.annotation.Nullable;
+import android.text.TextUtils;
 
 import com.example.cristhian.popmovies.models.MovieEntity;
 import com.example.cristhian.popmovies.models.ReviewEntity;
@@ -27,6 +28,8 @@ public class MovieProvider extends ContentProvider {
 
     private static final UriMatcher sUriMatcher = buildUriMatcher();
     private MovieDbHelper mOpenHelper;
+
+    static final String MOVIE_ID = "movie_id";
 
     static final int MOVIE = 100;
     static final int VIDEO = 200;
@@ -279,6 +282,24 @@ public class MovieProvider extends ContentProvider {
             case REVIEW:
                 rowsDeleted = db.delete(ReviewEntity.TABLE_NAME, selection, selectionArgs);
                 break;
+            case MOVIE_BY_MOVIE_ID: {
+                String id = uri.getLastPathSegment();
+                rowsDeleted = db.delete(MovieEntity.TABLE_NAME, MOVIE_ID +  " = " + id +
+                        (!TextUtils.isEmpty(selection) ? " AND (" + selection + ')' : ""), selectionArgs);
+                break;
+            }
+            case MOVIE_WITH_VIDEOS: {
+                String id = uri.getLastPathSegment();
+                rowsDeleted = db.delete(VideoEntity.TABLE_NAME, MOVIE_ID +  " = " + id +
+                        (!TextUtils.isEmpty(selection) ? " AND (" + selection + ')' : ""), selectionArgs);
+                break;
+            }
+            case MOVIE_WITH_REVIEWS: {
+                String id = uri.getLastPathSegment();
+                rowsDeleted = db.delete(ReviewEntity.TABLE_NAME, MOVIE_ID +  " = " + id +
+                        (!TextUtils.isEmpty(selection) ? " AND (" + selection + ')' : ""), selectionArgs);
+                break;
+            }
             default:
                 throw new UnsupportedOperationException("Unknown uri: " + uri);
         }
