@@ -17,12 +17,7 @@ public class MainActivity extends AppCompatActivity implements Communicator {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-
-//        if (savedInstanceState != null) {
-//            setContentView(R.layout.detail_movie_fragment_layout);
-//        } else {
-            setContentView(R.layout.activity_main);
-//        }
+        setContentView(R.layout.activity_main);
     }
 
 
@@ -46,51 +41,23 @@ public class MainActivity extends AppCompatActivity implements Communicator {
 
     @Override
     public void response(Movie movie) {
-//        FragmentManager fragmentManager = getFragmentManager();
-//        DetailMovieFragment detailMovieFragment = (DetailMovieFragment) fragmentManager.findFragmentById(R.id.fragment2);
-//        if (detailMovieFragment != null) {
-//            detailMovieFragment.setMovie(movie);
-//        } else {
-//            DetailMovieFragment fragment = new DetailMovieFragment();
-//            fragment.setMovie(movie);
-//            getFragmentManager().beginTransaction()
-//                    .replace(R.id.pop_movies_container, fragment)
-//                    .addToBackStack(null).commit();
-//        }
+
 
         FragmentManager fragmentManager = getFragmentManager();
         DetailMovieFragment detailMovieFragment = (DetailMovieFragment) fragmentManager.findFragmentById(R.id.detail_movie_frag);
         if (detailMovieFragment == null) {
-//            detailMovieFragment.setMovie(movie);
+
             Intent intent = new Intent(this, DetailMovieActivity.class);
 
             Bundle mBundle = new Bundle();
             mBundle.putParcelable("movie", movie);
             intent.putExtras(mBundle);
 
-//            intent.putExtra("movie", (Parcelable)movie);
-
-//            detailMovieFragment.setMovie(movie);
             startActivity(intent);
         } else {
-//            DetailMovieFragment fragment = new DetailMovieFragment();
-//            fragment.setMovie(movie);
             detailMovieFragment.updateInfo(movie);
         }
     }
-
-//    @Override
-//    public void responseDetail(MovieDetail movieDetail) {
-//        DetailMovieFragment detailMovieFragment = (DetailMovieFragment)getFragmentManager().findFragmentById(R.id.detail_movie_frag);
-//        if (detailMovieFragment == null){
-//            Intent intent = new Intent(this, DetailMovieActivity.class);
-//            intent.putExtra("movieDetail", (Parcelable)movieDetail);
-//            startActivity(intent);
-//        }else {
-//            detailMovieFragment.updateInfo(movieDetail);
-//        }
-//    }
-
 
     @Override
     public void onBackPressed() {

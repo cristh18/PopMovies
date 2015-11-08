@@ -15,6 +15,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.GridView;
+import android.widget.ProgressBar;
 
 import com.example.cristhian.popmovies.models.MovieEntity;
 import com.example.cristhian.popmovies.models.ReviewEntity;
@@ -42,6 +43,10 @@ public class MoviesFragment extends Fragment {
     private List<Movie> favoriteMovies;
 
     int option_selected;
+
+    static ProgressBar progressBar;
+
+    protected static int progressStatus;
 
     public MoviesFragment() {
         valueSorts = "popularity.desc";
@@ -87,11 +92,17 @@ public class MoviesFragment extends Fragment {
     public boolean onOptionsItemSelected(MenuItem item) {
         int id = item.getItemId();
         if (id == R.id.action_most_popular) {
+            progressStatus = 1;
+            progressBar.setVisibility(View.VISIBLE);
+            progressBar.setProgress(0);
             PopularMoviesTask popularMoviesTask = new PopularMoviesTask();
             popularMoviesTask.execute("popularity.desc");
             option_selected = R.id.action_most_popular;
             return true;
         } else if (id == R.id.action_highest_rated) {
+            progressStatus = 1;
+            progressBar.setVisibility(View.VISIBLE);
+            progressBar.setProgress(0);
             PopularMoviesTask popularMoviesTask = new PopularMoviesTask();
             popularMoviesTask.execute("vote_average.desc");
             option_selected = R.id.action_highest_rated;
@@ -113,8 +124,13 @@ public class MoviesFragment extends Fragment {
         getActivity().setTitle("Pop Movies");
         comm = (Communicator) getActivity();
         final List<Movie> movies = new ArrayList<>();
+        progressBar = (ProgressBar) view.findViewById(R.id.progressBar1);
+        progressBar.setMax(10);
         customListAdapter = new MovieListAdapter(this.getActivity(), movies);
         if (!valueSorts.equalsIgnoreCase("searchFavorites")) {
+            progressStatus = 1;
+            progressBar.setVisibility(View.VISIBLE);
+            progressBar.setProgress(0);
             PopularMoviesTask popularMoviesTask = new PopularMoviesTask();
             popularMoviesTask.execute(valueSorts);
         } else {

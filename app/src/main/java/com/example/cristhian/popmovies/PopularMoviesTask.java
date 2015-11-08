@@ -2,7 +2,9 @@ package com.example.cristhian.popmovies;
 
 import android.net.Uri;
 import android.os.AsyncTask;
+import android.os.SystemClock;
 import android.util.Log;
+import android.view.View;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -20,7 +22,7 @@ import java.util.List;
 /**
  * Created by Cristhian on 9/29/2015.
  */
-public class PopularMoviesTask extends AsyncTask<String, Void, List<Movie>> {
+public class PopularMoviesTask extends AsyncTask<String, Integer, List<Movie>> {
 
     private final String LOG_TAG = PopularMoviesTask.class.getSimpleName();
 
@@ -118,7 +120,20 @@ public class PopularMoviesTask extends AsyncTask<String, Void, List<Movie>> {
             String movieData = searchMovies(params[0]);
             try {
                 if (getMoviesData(movieData).size() > 0 && !getMoviesData(movieData).isEmpty()) {
-                    movies.addAll(getMoviesData(movieData));
+                    int total = 0;
+                    MoviesFragment.progressStatus = movies.size();
+                    for (int i = 0; i <= getMoviesData(movieData).size(); i++){
+                        try {
+                            total += i;
+                            Thread.sleep(100);
+                            publishProgress(total);
+                            movies.addAll(getMoviesData(movieData));
+                        }catch (InterruptedException e){
+                            e.printStackTrace();
+                        }
+
+
+                    }
                 }
             } catch (JSONException e) {
                 e.printStackTrace();
@@ -131,6 +146,7 @@ public class PopularMoviesTask extends AsyncTask<String, Void, List<Movie>> {
 
     @Override
     protected void onPostExecute(List<Movie> result) {
+        MoviesFragment.progressBar.setVisibility(View.GONE);
         if (result != null) {
             MoviesFragment.customListAdapter.clear();
             for (Movie a : result) {
@@ -138,5 +154,10 @@ public class PopularMoviesTask extends AsyncTask<String, Void, List<Movie>> {
                 MoviesFragment.customListAdapter.add(a);
             }
         }
+    }
+
+    protected void onProgressUpdate(Integer... progress) {
+        // Set progress percentage
+        MoviesFragment.progressBar.setProgress(progress[0]);
     }
 }
