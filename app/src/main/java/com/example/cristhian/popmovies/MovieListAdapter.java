@@ -36,7 +36,7 @@ public class MovieListAdapter extends ArrayAdapter<Movie> {
                 if (movies.get(position).getPoster_path() != null) {
                     String baseURL = "http://image.tmdb.org/t/p/w500/";
                     String item = baseURL.concat(movies.get(position).getPoster_path());                            ;
-                    Picasso.with(context).load(item).noFade().into(imageView);
+                    Picasso.with(context).load(item).placeholder(R.drawable.placeholder).noFade().into(imageView);
                 }
             }
         }

@@ -247,7 +247,7 @@ public class DetailMovieFragment extends Fragment implements IDetailMovie {
                 textView.setText(movieDetail.getOriginal_title());
                 String baseURL = "http://image.tmdb.org/t/p/w342/";
                 String item = baseURL.concat(movieDetail.getPoster_path());
-                Picasso.with(getActivity()).load(item).noFade().into(imageView);
+                Picasso.with(getActivity()).load(item).placeholder(R.drawable.placeholder).noFade().into(imageView);
                 String[] yearVector = movieDetail.getRelease_date().split("-");
                 yearTextView.setText("Year: " + yearVector[0]);
                 durationTextView.setText("Duration: " + movieDetail.getRuntime().toString().concat(" min"));
@@ -289,7 +289,7 @@ public class DetailMovieFragment extends Fragment implements IDetailMovie {
                     });
 
 
-                    Picasso.with(getActivity()).load(urlBaseVideo).noFade().into(trailerImageView);
+                    Picasso.with(getActivity()).load(urlBaseVideo).placeholder(R.drawable.placeholder).noFade().into(trailerImageView);
                     trailerImageView.setLayoutParams(params);
                     ll.addView(trailerImageView);
 
