@@ -45,7 +45,8 @@
             android:layout_alignParentLeft="true"
             android:layout_toLeftOf="@+id/year_text"
             tools:src="@drawable/max"
-            android:paddingTop="@dimen/activity_vertical_margin_image_detail"
+            android:layout_below="@+id/header_detail"
+            android:paddingTop="@dimen/activity_vertical_margin"
             android:paddingLeft="@dimen/activity_horizontal_margin"
             android:paddingRight="@dimen/activity_horizontal_margin"/>
 
@@ -88,19 +89,27 @@
             android:textAlignment="center"
             android:paddingLeft="@dimen/activity_horizontal_margin"
             android:paddingRight="@dimen/activity_horizontal_margin"
-            android:text="Favorite" />
+            android:layout_marginRight="@dimen/activity_horizontal_margin_button"
+            android:text="Favorite"
+            android:elegantTextHeight="true"
+            android:backgroundTint="@android:color/holo_blue_dark"
+            android:drawableLeft="@drawable/ic_favorite_black_24dp"/>
 
         <Button
             android:id="@+id/removeFavoriteButton"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_below="@+id/favoriteButton"
+            android:layout_below="@+id/rate_text"
             android:layout_alignParentRight="true"
             android:gravity="center"
             android:textAlignment="center"
             android:paddingLeft="@dimen/activity_horizontal_margin"
             android:paddingRight="@dimen/activity_horizontal_margin"
-            android:text="Remove from favorites" />
+            android:layout_marginRight="@dimen/activity_horizontal_margin_button"
+            android:elegantTextHeight="true"
+            android:text="Remove"
+            android:backgroundTint="@android:color/holo_orange_dark"
+            android:drawableLeft="@drawable/ic_favorite_border_black_24dp"/>
 
         <TextView
             android:id="@+id/overview_text"
@@ -110,7 +119,6 @@
             android:gravity="fill_horizontal"
             android:paddingLeft="@dimen/activity_horizontal_margin"
             android:paddingRight="@dimen/activity_horizontal_margin"
-            android:paddingTop="@dimen/activity_vertical_margin"
             android:paddingBottom="@dimen/activity_horizontal_margin"/>
 
         <TextView
