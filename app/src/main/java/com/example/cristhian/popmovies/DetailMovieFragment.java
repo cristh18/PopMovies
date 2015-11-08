@@ -17,6 +17,7 @@ import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
+import android.widget.RelativeLayout;
 import android.widget.ScrollView;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -46,6 +47,10 @@ public class DetailMovieFragment extends Fragment implements IDetailMovie {
     Button favoriteButton;
 
     Button removefavoriteButton;
+
+    TextView trailers;
+
+    TextView reviews;
 
     MovieDetail movieDetail;
 
@@ -102,6 +107,10 @@ public class DetailMovieFragment extends Fragment implements IDetailMovie {
         removefavoriteButton = (Button) rootView.findViewById(R.id.removeFavoriteButton);
         removefavoriteButton.setVisibility(View.INVISIBLE);
 
+        trailers = (TextView)rootView.findViewById(R.id.trailers);
+
+        reviews = (TextView)rootView.findViewById(R.id.reviews);
+
         lm = (LinearLayout) rootView.findViewById(R.id.videosLayout);
 
         lr = (LinearLayout) rootView.findViewById(R.id.reviewsLayout);
@@ -115,9 +124,9 @@ public class DetailMovieFragment extends Fragment implements IDetailMovie {
         favoriteButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                if (validateFavoriteMovie(movieDetail.getId()) == true){
+                if (validateFavoriteMovie(movieDetail.getId()) == true) {
                     Toast.makeText(getActivity(), "This film is already selected as favorite", Toast.LENGTH_LONG).show();
-                }else {
+                } else {
                     ContentValues values = new ContentValues();
                     values.put(MovieEntity.COLUMN_MOVIE_ID, movieDetail.getId());
                     values.put(MovieEntity.COLUMN_BACKDROP_PATH, movieDetail.getBackdrop_path());
@@ -128,15 +137,15 @@ public class DetailMovieFragment extends Fragment implements IDetailMovie {
                     values.put(MovieEntity.COLUMN_RUNTIME, movieDetail.getRuntime());
                     values.put(MovieEntity.COLUMN_VOTE_AVERAGE, movieDetail.getVote_average());
 
-                    if (movieDetail.getPopularity() != null){
+                    if (movieDetail.getPopularity() != null) {
                         values.put(MovieEntity.COLUMN_POPULARITY, movieDetail.getPopularity());
-                    }else {
+                    } else {
                         values.put(MovieEntity.COLUMN_POPULARITY, 0.0);
                     }
 
-                    if (movieDetail.getVote_count() != null){
+                    if (movieDetail.getVote_count() != null) {
                         values.put(MovieEntity.COLUMN_VOTE_COUNT, movieDetail.getVote_count());
-                    }else {
+                    } else {
                         values.put(MovieEntity.COLUMN_VOTE_COUNT, 0);
                     }
 
@@ -186,13 +195,11 @@ public class DetailMovieFragment extends Fragment implements IDetailMovie {
                 if (moviesFragment == null) {
                     getActivity().onBackPressed();
                 } else {
-                   LinearLayout contentDetails = (LinearLayout)getActivity().findViewById(R.id.contentDetails);
-                   contentDetails.removeAllViews();
-                   moviesFragment.updateInfo("searchFavorites");
+                    clearScreen();
+                    moviesFragment.updateInfo("searchFavorites");
                 }
             }
         });
-
 
         Log.e("TEST", "onCreate");
 
@@ -247,11 +254,11 @@ public class DetailMovieFragment extends Fragment implements IDetailMovie {
                 rateTextView.setText("Average Rating: " + movieDetail.getVote_average().toString().concat("/10"));
                 textViewOverview.setText(movieDetail.getOverview());
 
-                if (movieDetail.getPopularity()==null){
+                if (movieDetail.getPopularity() == null) {
                     movieDetail.setPopularity(0.0);
                 }
 
-                if (movieDetail.getVote_count()==null){
+                if (movieDetail.getVote_count() == null) {
                     movieDetail.setVote_count(0);
                 }
 
@@ -259,6 +266,7 @@ public class DetailMovieFragment extends Fragment implements IDetailMovie {
                 LinearLayout.LayoutParams params = new LinearLayout.LayoutParams(
                         android.app.ActionBar.LayoutParams.WRAP_CONTENT, android.app.ActionBar.LayoutParams.WRAP_CONTENT);
 
+                trailers.setText("Trailers:");
 
                 for (int i = 0; i < movieDetail.getVideos().size(); i++) {
                     MovieVideoDetail movieVideoDetail = movieDetail.getVideos().get(i);
@@ -293,11 +301,13 @@ public class DetailMovieFragment extends Fragment implements IDetailMovie {
                     lm.addView(ll);
                 }
 
+                reviews.setText("Reviews:");
+
                 for (int i = 0; i < movieDetail.getReviews().size(); i++) {
                     MovieReviewDetail movieReviewDetail = movieDetail.getReviews().get(i);
 
                     TextView reviewTitle = new TextView(getActivity());
-                    reviewTitle.setText("Review " + (i+1));
+                    reviewTitle.setText("Review " + (i + 1));
                     lr.addView(reviewTitle);
 
                     TextView reviewText = new TextView(getActivity());
@@ -371,11 +381,11 @@ public class DetailMovieFragment extends Fragment implements IDetailMovie {
         return favoriteMovie;
     }
 
-    private boolean validateFavoriteMovie(Long movieId){
+    private boolean validateFavoriteMovie(Long movieId) {
         boolean isFavorite = false;
-        if (isFavoriteMovie(movieId).getId() != null){
+        if (isFavoriteMovie(movieId).getId() != null) {
             isFavorite = true;
-        }else {
+        } else {
             isFavorite = false;
         }
         return isFavorite;
@@ -418,5 +428,50 @@ public class DetailMovieFragment extends Fragment implements IDetailMovie {
         }
 
         return result;
+    }
+
+    private void clearScreen(){
+        ImageView image_header_detail = (ImageView)getActivity().findViewById(R.id.image_header_detail);
+        image_header_detail.setImageBitmap(null);
+
+        TextView detail_text = (TextView)getActivity().findViewById(R.id.detail_text);
+        detail_text.setText("");
+
+        ImageView image_detail = (ImageView)getActivity().findViewById(R.id.image_detail);
+        image_detail.setImageBitmap(null);
+
+        TextView year_text = (TextView)getActivity().findViewById(R.id.year_text);
+        year_text.setText("");
+
+        TextView duration_text = (TextView)getActivity().findViewById(R.id.duration_text);
+        duration_text.setText("");
+
+        TextView rate_text = (TextView)getActivity().findViewById(R.id.rate_text);
+        rate_text.setText("");
+
+        Button favoriteButton = (Button) getActivity().findViewById(R.id.favoriteButton);
+        favoriteButton.setVisibility(View.INVISIBLE);
+
+        Button removeFavoriteButton  = (Button) getActivity().findViewById(R.id.removeFavoriteButton);
+        removeFavoriteButton.setVisibility(View.INVISIBLE);
+
+        TextView overview_text = (TextView)getActivity().findViewById(R.id.overview_text);
+        overview_text.setText("");
+
+        TextView separator = (TextView)getActivity().findViewById(R.id.separator);
+        separator.setText("");
+
+        TextView trailers = (TextView)getActivity().findViewById(R.id.trailers);
+        trailers.setText("");
+
+        lm.removeAllViews();
+
+        TextView separator2 = (TextView)getActivity().findViewById(R.id.separator2);
+        separator2.setText("");
+
+        TextView reviews = (TextView)getActivity().findViewById(R.id.reviews);
+        reviews.setText("");
+
+        lr.removeAllViews();
     }
 }

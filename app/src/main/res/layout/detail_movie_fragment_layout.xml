@@ -1,10 +1,11 @@
 <?xml version="1.0" encoding="utf-8"?>
 <ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/fragment2"
     android:layout_width="match_parent"
     android:layout_height="match_parent">
 
-    <LinearLayout
+    <RelativeLayout
         android:id="@+id/contentDetails"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
@@ -42,9 +43,11 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_alignParentLeft="true"
-            android:layout_below="@+id/header_detail"
             android:layout_toLeftOf="@+id/year_text"
-            android:paddingTop="@dimen/activity_vertical_margin" />
+            tools:src="@drawable/max"
+            android:paddingTop="@dimen/activity_vertical_margin_image_detail"
+            android:paddingLeft="@dimen/activity_horizontal_margin"
+            android:paddingRight="@dimen/activity_horizontal_margin"/>
 
 
         <TextView
@@ -53,21 +56,51 @@
             android:layout_height="wrap_content"
             android:layout_alignParentRight="true"
             android:layout_below="@+id/header_detail"
-            android:paddingTop="@dimen/activity_vertical_margin" />
+            android:paddingTop="@dimen/activity_vertical_margin_year"
+            android:paddingLeft="@dimen/activity_horizontal_margin"
+            android:paddingRight="@dimen/activity_horizontal_margin"/>
 
         <TextView
             android:id="@+id/duration_text"
             android:layout_width="200dp"
             android:layout_height="wrap_content"
             android:layout_alignParentRight="true"
-            android:layout_below="@+id/year_text" />
+            android:layout_below="@+id/year_text"
+            android:paddingLeft="@dimen/activity_horizontal_margin"
+            android:paddingRight="@dimen/activity_horizontal_margin"/>
 
         <TextView
             android:id="@+id/rate_text"
             android:layout_width="200dp"
             android:layout_height="wrap_content"
             android:layout_alignParentRight="true"
-            android:layout_below="@+id/duration_text" />
+            android:layout_below="@+id/duration_text"
+            android:paddingLeft="@dimen/activity_horizontal_margin"
+            android:paddingRight="@dimen/activity_horizontal_margin"/>
+
+        <Button
+            android:id="@+id/favoriteButton"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_below="@+id/rate_text"
+            android:layout_alignParentRight="true"
+            android:gravity="center"
+            android:textAlignment="center"
+            android:paddingLeft="@dimen/activity_horizontal_margin"
+            android:paddingRight="@dimen/activity_horizontal_margin"
+            android:text="Favorite" />
+
+        <Button
+            android:id="@+id/removeFavoriteButton"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_below="@+id/favoriteButton"
+            android:layout_alignParentRight="true"
+            android:gravity="center"
+            android:textAlignment="center"
+            android:paddingLeft="@dimen/activity_horizontal_margin"
+            android:paddingRight="@dimen/activity_horizontal_margin"
+            android:text="Remove from favorites" />
 
         <TextView
             android:id="@+id/overview_text"
@@ -97,8 +130,7 @@
             android:paddingBottom="@dimen/activity_horizontal_margin"
             android:paddingLeft="@dimen/activity_horizontal_margin"
             android:paddingRight="@dimen/activity_horizontal_margin"
-            android:paddingTop="@dimen/activity_vertical_margin"
-            android:text="Trailers:" />
+            android:paddingTop="@dimen/activity_vertical_margin" />
 
         <LinearLayout
             android:id="@+id/videosLayout"
@@ -128,8 +160,7 @@
             android:paddingBottom="@dimen/activity_horizontal_margin"
             android:paddingLeft="@dimen/activity_horizontal_margin"
             android:paddingRight="@dimen/activity_horizontal_margin"
-            android:paddingTop="@dimen/activity_vertical_margin"
-            android:text="Reviews:" />
+            android:paddingTop="@dimen/activity_vertical_margin" />
 
         <LinearLayout
             android:id="@+id/reviewsLayout"
@@ -142,18 +173,8 @@
             android:paddingTop="@dimen/activity_vertical_margin"
             android:orientation="vertical"></LinearLayout>
 
-        <Button
-            android:id="@+id/favoriteButton"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="Favorite" />
 
-        <Button
-            android:id="@+id/removeFavoriteButton"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="Remove from favorites" />
 
-    </LinearLayout>
+    </RelativeLayout>
 
 </ScrollView>
