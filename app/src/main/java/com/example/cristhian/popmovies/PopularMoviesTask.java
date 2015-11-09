@@ -122,12 +122,13 @@ public class PopularMoviesTask extends AsyncTask<String, Integer, List<Movie>> {
                 if (getMoviesData(movieData).size() > 0 && !getMoviesData(movieData).isEmpty()) {
                     int total = 0;
                     MoviesFragment.progressStatus = movies.size();
-                    for (int i = 0; i <= getMoviesData(movieData).size(); i++){
+                    for (int i = 0; i < getMoviesData(movieData).size(); i++){
                         try {
                             total += i;
                             Thread.sleep(100);
                             publishProgress(total);
-                            movies.addAll(getMoviesData(movieData));
+                            movies.add(getMoviesData(movieData).get(i));
+//                            movies.addAll(getMoviesData(movieData));
                         }catch (InterruptedException e){
                             e.printStackTrace();
                         }

@@ -2,10 +2,12 @@ package com.example.cristhian.popmovies;
 
 import android.app.Activity;
 import android.app.Fragment;
-import android.content.ContentUris;
 import android.database.Cursor;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
+import android.support.v7.widget.DefaultItemAnimator;
+import android.support.v7.widget.GridLayoutManager;
+import android.support.v7.widget.RecyclerView;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
@@ -13,15 +15,12 @@ import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.AdapterView;
-import android.widget.GridView;
 import android.widget.ProgressBar;
 
 import com.example.cristhian.popmovies.models.MovieEntity;
 import com.example.cristhian.popmovies.models.ReviewEntity;
 import com.example.cristhian.popmovies.models.VideoEntity;
 
-import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -30,7 +29,9 @@ import java.util.List;
  */
 public class MoviesFragment extends Fragment {
 
-    private GridView myGridMovieView;
+    private RecyclerView myGridMovieView;
+
+    RecyclerView.LayoutManager mLayoutManager;
 
     protected static MovieListAdapter customListAdapter;
 
@@ -92,6 +93,7 @@ public class MoviesFragment extends Fragment {
     public boolean onOptionsItemSelected(MenuItem item) {
         int id = item.getItemId();
         if (id == R.id.action_most_popular) {
+            progressBar.bringToFront();
             progressStatus = 1;
             progressBar.setVisibility(View.VISIBLE);
             progressBar.setProgress(0);
@@ -100,6 +102,7 @@ public class MoviesFragment extends Fragment {
             option_selected = R.id.action_most_popular;
             return true;
         } else if (id == R.id.action_highest_rated) {
+            progressBar.bringToFront();
             progressStatus = 1;
             progressBar.setVisibility(View.VISIBLE);
             progressBar.setProgress(0);
@@ -128,6 +131,7 @@ public class MoviesFragment extends Fragment {
         progressBar.setMax(10);
         customListAdapter = new MovieListAdapter(this.getActivity(), movies);
         if (!valueSorts.equalsIgnoreCase("searchFavorites")) {
+
             progressStatus = 1;
             progressBar.setVisibility(View.VISIBLE);
             progressBar.setProgress(0);
@@ -138,21 +142,35 @@ public class MoviesFragment extends Fragment {
             seeFavoriteMovies();
         }
 
-        myGridMovieView = (GridView) view.findViewById(R.id.grid_view_pop_movies);
+        myGridMovieView = (RecyclerView) view.findViewById(R.id.grid_view_pop_movies);
 
         myGridMovieView.setAdapter(customListAdapter);
-        myGridMovieView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+//        myGridMovieView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+//            @Override
+//            public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
+//                Movie movie = customListAdapter.getItem(i);
+//                if (movie.getRuntime() == null) {
+//                    movie.setRuntime(0);
+//                }
+//                comm.response(movie);
+//
+//            }
+//        });
+
+        mLayoutManager = new GridLayoutManager(getActivity(), 2);
+        myGridMovieView.setHasFixedSize(true);
+        myGridMovieView.setLayoutManager(mLayoutManager);
+        myGridMovieView.setItemAnimator(new DefaultItemAnimator());
+        customListAdapter.setOnItemClickListener(new OnItemClick() {
             @Override
-            public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
-                Movie movie = customListAdapter.getItem(i);
+            public void onItemClicked(View view, int position, Object data) {
+                Movie movie = (Movie) data;
                 if (movie.getRuntime() == null) {
                     movie.setRuntime(0);
                 }
                 comm.response(movie);
-
             }
         });
-
         return view;
     }
 

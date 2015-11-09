@@ -241,7 +241,7 @@ public class DetailMovieFragment extends Fragment implements IDetailMovie {
 
                 String baseURLx = "http://image.tmdb.org/t/p/w780/";
                 String itemx = baseURLx.concat(movieDetail.getBackdrop_path());
-                Picasso.with(getActivity()).load(itemx).noFade().into(image_header_detail);
+                Picasso.with(getActivity()).load(itemx).placeholder(R.drawable.placeholder).noFade().into(image_header_detail);
 
 
                 textView.setText(movieDetail.getOriginal_title());
