@@ -6,4 +6,5 @@
     <string name="action_most_popular" translatable="false" >Most Popular</string>
     <string name="action_highest_rated" translatable="false" >Highest Rated</string>
     <string name="action_favorites" translatable="false" >Favorites</string>
+    <string name="action_share" translatable="false" >Share</string>
 </resources>

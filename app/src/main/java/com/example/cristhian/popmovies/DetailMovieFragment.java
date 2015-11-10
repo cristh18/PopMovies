@@ -7,18 +7,19 @@ import android.content.Intent;
 import android.database.Cursor;
 import android.net.Uri;
 import android.os.Bundle;
-import android.provider.UserDictionary;
 import android.support.annotation.Nullable;
-import android.text.TextUtils;
+import android.support.v4.view.MenuItemCompat;
+import android.support.v7.widget.ShareActionProvider;
 import android.util.Log;
 import android.view.LayoutInflater;
+import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
-import android.widget.RelativeLayout;
-import android.widget.ScrollView;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -29,7 +30,6 @@ import com.example.cristhian.popmovies.service.MovieProvider;
 import com.squareup.picasso.Picasso;
 
 import java.util.ArrayList;
-import java.util.List;
 
 public class DetailMovieFragment extends Fragment implements IDetailMovie {
 
@@ -107,9 +107,9 @@ public class DetailMovieFragment extends Fragment implements IDetailMovie {
         removefavoriteButton = (Button) rootView.findViewById(R.id.removeFavoriteButton);
         removefavoriteButton.setVisibility(View.INVISIBLE);
 
-        trailers = (TextView)rootView.findViewById(R.id.trailers);
+        trailers = (TextView) rootView.findViewById(R.id.trailers);
 
-        reviews = (TextView)rootView.findViewById(R.id.reviews);
+        reviews = (TextView) rootView.findViewById(R.id.reviews);
 
         lm = (LinearLayout) rootView.findViewById(R.id.videosLayout);
 
@@ -430,48 +430,68 @@ public class DetailMovieFragment extends Fragment implements IDetailMovie {
         return result;
     }
 
-    private void clearScreen(){
-        ImageView image_header_detail = (ImageView)getActivity().findViewById(R.id.image_header_detail);
+    private void clearScreen() {
+        ImageView image_header_detail = (ImageView) getActivity().findViewById(R.id.image_header_detail);
         image_header_detail.setImageBitmap(null);
 
-        TextView detail_text = (TextView)getActivity().findViewById(R.id.detail_text);
+        TextView detail_text = (TextView) getActivity().findViewById(R.id.detail_text);
         detail_text.setText("");
 
-        ImageView image_detail = (ImageView)getActivity().findViewById(R.id.image_detail);
+        ImageView image_detail = (ImageView) getActivity().findViewById(R.id.image_detail);
         image_detail.setImageBitmap(null);
 
-        TextView year_text = (TextView)getActivity().findViewById(R.id.year_text);
+        TextView year_text = (TextView) getActivity().findViewById(R.id.year_text);
         year_text.setText("");
 
-        TextView duration_text = (TextView)getActivity().findViewById(R.id.duration_text);
+        TextView duration_text = (TextView) getActivity().findViewById(R.id.duration_text);
         duration_text.setText("");
 
-        TextView rate_text = (TextView)getActivity().findViewById(R.id.rate_text);
+        TextView rate_text = (TextView) getActivity().findViewById(R.id.rate_text);
         rate_text.setText("");
 
         Button favoriteButton = (Button) getActivity().findViewById(R.id.favoriteButton);
         favoriteButton.setVisibility(View.INVISIBLE);
 
-        Button removeFavoriteButton  = (Button) getActivity().findViewById(R.id.removeFavoriteButton);
+        Button removeFavoriteButton = (Button) getActivity().findViewById(R.id.removeFavoriteButton);
         removeFavoriteButton.setVisibility(View.INVISIBLE);
 
-        TextView overview_text = (TextView)getActivity().findViewById(R.id.overview_text);
+        TextView overview_text = (TextView) getActivity().findViewById(R.id.overview_text);
         overview_text.setText("");
 
-        TextView separator = (TextView)getActivity().findViewById(R.id.separator);
+        TextView separator = (TextView) getActivity().findViewById(R.id.separator);
         separator.setText("");
 
-        TextView trailers = (TextView)getActivity().findViewById(R.id.trailers);
+        TextView trailers = (TextView) getActivity().findViewById(R.id.trailers);
         trailers.setText("");
 
         lm.removeAllViews();
 
-        TextView separator2 = (TextView)getActivity().findViewById(R.id.separator2);
+        TextView separator2 = (TextView) getActivity().findViewById(R.id.separator2);
         separator2.setText("");
 
-        TextView reviews = (TextView)getActivity().findViewById(R.id.reviews);
+        TextView reviews = (TextView) getActivity().findViewById(R.id.reviews);
         reviews.setText("");
 
         lr.removeAllViews();
+    }
+
+    private Intent createShareTrailerMovieIntent() {
+        Intent shareIntent = new Intent(Intent.ACTION_SEND);
+        shareIntent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+        shareIntent.setType("text/plain");
+        shareIntent.putExtra(Intent.EXTRA_TEXT, "http://img.youtube.com/vi/".concat("2p7bgMxewxA").concat("/hqdefault.jpg"));
+        return shareIntent;
+    }
+
+    @Override
+    public void onCreateOptionsMenu(Menu menu, MenuInflater menuInflater) {
+        menuInflater.inflate(R.menu.menu_detail_movie, menu);
+        MenuItem item = menu.findItem(R.id.action_share);
+        ShareActionProvider mShareActionProvider = (ShareActionProvider) MenuItemCompat.getActionProvider(item);
+        if (mShareActionProvider != null) {
+            mShareActionProvider.setShareIntent(createShareTrailerMovieIntent());
+        } else {
+            Log.i(LOG_TAG, "is null");
+        }
     }
 }
