@@ -8,6 +8,7 @@ import android.database.Cursor;
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
+import android.support.v4.app.ActivityCompat;
 import android.support.v4.view.MenuItemCompat;
 import android.support.v7.widget.ShareActionProvider;
 import android.util.Log;
@@ -30,6 +31,7 @@ import com.example.cristhian.popmovies.service.MovieProvider;
 import com.squareup.picasso.Picasso;
 
 import java.util.ArrayList;
+import java.util.List;
 
 public class DetailMovieFragment extends Fragment implements IDetailMovie {
 
@@ -61,6 +63,8 @@ public class DetailMovieFragment extends Fragment implements IDetailMovie {
     MovieProvider movieProvider;
 
     Movie favoriteMovie;
+
+    Menu mMenu;
 
     // Defines a string to contain the selection clause
     String selectionClause;
@@ -317,6 +321,8 @@ public class DetailMovieFragment extends Fragment implements IDetailMovie {
 
             }
         }
+
+        restartMenu();
     }
 
     @Override
@@ -476,15 +482,21 @@ public class DetailMovieFragment extends Fragment implements IDetailMovie {
     }
 
     private Intent createShareTrailerMovieIntent() {
+        String videoKey = "";
+        if (movieDetail != null) {
+            if (movieDetail.getVideos() != null && movieDetail.getVideos().size() > 0)
+                videoKey = movieDetail.getVideos().get(0).getKey();
+        }
         Intent shareIntent = new Intent(Intent.ACTION_SEND);
         shareIntent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
         shareIntent.setType("text/plain");
-        shareIntent.putExtra(Intent.EXTRA_TEXT, "http://img.youtube.com/vi/".concat("2p7bgMxewxA").concat("/hqdefault.jpg"));
+        shareIntent.putExtra(Intent.EXTRA_TEXT, "https://www.youtube.com/watch?v=".concat(videoKey));
         return shareIntent;
     }
 
     @Override
     public void onCreateOptionsMenu(Menu menu, MenuInflater menuInflater) {
+        mMenu = menu;
         menuInflater.inflate(R.menu.menu_detail_movie, menu);
         MenuItem item = menu.findItem(R.id.action_share);
         ShareActionProvider mShareActionProvider = (ShareActionProvider) MenuItemCompat.getActionProvider(item);
@@ -492,6 +504,16 @@ public class DetailMovieFragment extends Fragment implements IDetailMovie {
             mShareActionProvider.setShareIntent(createShareTrailerMovieIntent());
         } else {
             Log.i(LOG_TAG, "is null");
+        }
+    }
+
+    private void restartMenu() {
+        if (mMenu != null) {
+            MenuItem item = mMenu.findItem(R.id.action_share);
+            if (item != null) {
+                item.setVisible(false);
+                ActivityCompat.invalidateOptionsMenu(this.getActivity());
+            }
         }
     }
 }
